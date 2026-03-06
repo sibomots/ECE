@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title> ECE – Embedded Engineering Mindset</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<script>
+function decode(str) {
+  return str.replace(/[a-zA-Z]/g, function(c) {
+    const base = (c <= 'Z') ? 65 : 97;
+    return String.fromCharCode(
+      ((c.charCodeAt(0) - base + 26 - 17) % 26) + base
+    );
+  });
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll(".email-obf").forEach(el => {
+    function reveal() {
+      if (el.dataset.revealed) return;
+      el.textContent = decode(el.dataset.x);
+      el.dataset.revealed = "true";
+      el.style.cursor = "text";
+    }
+
+    el.addEventListener("click", reveal);
+    el.addEventListener("keydown", e => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); reveal(); }
+    });
+  });
+});
+</script>
+
+  <style>
+
+.email-obf {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+:root {
+  --brand-dark: #10121B;
+  --brand-text-primary: #F8F8F8;
+  --brand-accent-cyan: #20B0CF;
+  --brand-accent-cyan-hover: #29D9FF;
+  --brand-support-grey: #C8D0DA;
+  --brand-white: #FFFFFF;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  color: var(--brand-text-primary);
+  background: var(--brand-dark);
+}
+
+/* Header */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgba(16, 18, 27, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.site-header-inner {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  color: var(--brand-text-primary);
+  text-decoration: none;
+}
+
+.brand span.brand-tagline {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 0.8rem;
+  color: var(--brand-support-grey);
+}
+
+.brand-logo {
+  height: 32px;
+  width: auto;
+  display: block;
+}
+
+.site-nav {
+  display: flex;
+  gap: 20px;
+  font-size: 0.95rem;
+}
+
+.site-nav a {
+  color: var(--brand-text-primary);
+  text-decoration: none;
+  opacity: 0.8;
+  padding-bottom: 2px;
+  border-bottom: 2px solid transparent;
+}
+
+.site-nav a:hover,
+.site-nav a:focus-visible {
+  opacity: 1;
+  border-bottom-color: var(--brand-accent-cyan);
+}
+
+/* Hero */
+
+.hero {
+  text-align: center;
+  padding: 110px 20px 80px;
+  background: radial-gradient(circle at top, #181c2a 0, #10121B 55%, #050609 100%);
+}
+
+.hero-inner {
+  max-width: 780px;
+  margin: 0 auto;
+}
+
+.hero-kicker {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--brand-support-grey);
+  margin-bottom: 10px;
+}
+
+.hero h1 {
+  font-size: clamp(2.2rem, 4vw, 3rem);
+  line-height: 1.1;
+  margin: 0 0 18px;
+  color: var(--brand-white);
+}
+
+.hero p {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  margin: 0 0 32px;
+  color: var(--brand-support-grey);
+}
+
+.hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 18px;
+  font-size: 0.85rem;
+  color: var(--brand-support-grey);
+}
+
+.hero-meta span {
+  opacity: 0.9;
+}
+
+/* Buttons */
+
+.btn {
+  display: inline-block;
+  padding: 14px 30px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-decoration: none;
+  border-radius: 5px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.1s ease,
+    box-shadow 0.2s ease;
+}
+
+.btn-primary {
+  color: var(--brand-white);
+  background-color: var(--brand-accent-cyan);
+  border-color: var(--brand-accent-cyan);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4),
+    0 16px 30px rgba(0, 0, 0, 0.45);
+}
+
+.btn-primary:hover,
+.btn-primary:focus-visible {
+  background-color: var(--brand-accent-cyan-hover);
+  border-color: var(--brand-accent-cyan-hover);
+  text-decoration: none;
+  transform: translateY(-1px);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5),
+    0 20px 36px rgba(0, 0, 0, 0.55);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5),
+    0 8px 16px rgba(0, 0, 0, 0.6);
+}
+
+/* Sections */
+
+.section {
+  padding: 72px 20px;
+  background: #070811;
+}
+
+.section-alt {
+  background: #0c0e17;
+}
+
+.section-inner {
+  max-width: 1040px;
+  margin: 0 auto;
+}
+
+.section-header {
+  max-width: 720px;
+  margin-bottom: 32px;
+}
+
+.section-kicker {
+  font-size: 0.8rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--brand-support-grey);
+  margin-bottom: 8px;
+}
+
+.section h2 {
+  font-size: 1.7rem;
+  margin: 0 0 10px;
+}
+
+.section-lead {
+  font-size: 0.98rem;
+  color: var(--brand-support-grey);
+  margin: 0;
+}
+
+/* Layout helpers */
+
+.columns-2 {
+  display: grid;
+  gap: 28px;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+}
+
+.columns-2 > div p {
+  margin-top: 0;
+}
+
+.cards-3,
+.cards-2 {
+  display: grid;
+  gap: 24px;
+}
+
+.cards-3 {
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+}
+
+.cards-2 {
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 10px;
+  padding: 20px 20px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.card h3 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 1.05rem;
+}
+
+.card p,
+.card li {
+  font-size: 0.94rem;
+  color: var(--brand-text-primary);
+}
+
+.card ul {
+  padding-left: 18px;
+  margin: 0;
+}
+
+/* Typography & lists */
+
+p {
+  margin: 0 0 0.75rem;
+}
+
+ul,
+ol {
+  margin: 0 0 0.85rem 1.2rem;
+  padding: 0;
+}
+
+li + li {
+  margin-top: 0.25rem;
+}
+
+.callout-block {
+  border-radius: 8px;
+  padding: 16px 18px;
+  background: radial-gradient(circle at top left, rgba(41, 217, 255, 0.18), rgba(16, 18, 27, 0.9));
+  border: 1px solid rgba(32, 176, 207, 0.5);
+  font-size: 0.95rem;
+}
+
+.callout-block strong {
+  color: var(--brand-white);
+}
+
+/* Code blocks */
+
+code,
+pre {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco,
+    Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+code {
+  font-size: 0.9em;
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+pre {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: #05060b;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  overflow-x: auto;
+}
+
+pre code {
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+/* Image */
+
+.board-figure {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.board-figure img {
+  max-width: 260px;
+  height: auto;
+  display: block;
+  margin: 0 auto 0.5rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.board-figure figcaption {
+  font-size: 0.8rem;
+  color: var(--brand-support-grey);
+}
+
+/* Footer */
+
+.site-footer {
+  xxpadding: 22px 20px 30px;
+  padding: 1.5rem 1rem;
+  background: #05060b;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  font-size: 0.8rem;
+}
+
+.site-footer-inner {
+  max-width: 1040px;
+  margin: 0 auto;
+  xxdisplay: flex;
+  display: block;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.site-footer p {
+  margin: 0.25rem 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  white-space: normal;   /* allow wrapping */
+}
+
+.site-footer a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.footer-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.footer-nav a {
+  color: var(--brand-support-grey);
+  text-decoration: none;
+}
+
+.footer-nav a:hover {
+  color: var(--brand-accent-cyan);
+}
+
+a {
+  color: var(--brand-accent-cyan-hover);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+a[href^="mailto:"] {
+  color: #ccccff;
+}
+
+a[href^="mailto:"]:hover {
+  color: #ffffff;
+}
+
+/* Responsive tweaks */
+
+@media (max-width: 720px) {
+  .site-header-inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .site-nav {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .columns-2 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hero {
+    padding-top: 90px;
+  }
+}
+
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a href="#home" class="brand">
+        <div class="tag">ECE resources</div>
+      </a>
+      <nav class="site-nav">
+        <a href="#home">Home</a>
+        <a href="#mindset">Mindset</a>
+        <a href="#technical">Technical</a>
+        <a href="#challenges">Challenges</a>
+        <a href="#reading">Reading</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- Hero -->
+    <section id="home" class="hero">
+      <div class="hero-inner">
+        <p class="hero-kicker">ECE / CS</p>
+        <h1>Embedded Engineering Mindset</h1>
+        <p>
+          Notes, challenges, and reading for students heading toward<br>
+          embedded systems / low-level software.
+        </p>
+        <a class="btn btn-primary" href="#technical">Jump to Technical Practice</a>
+        <div class="hero-meta">
+          <span>Instructor: Jeff Wandling</span>
+          <span>Focus: EE-425 &amp; related courses</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mindset & Interview -->
+    <section id="mindset" class="section">
+      <div class="section-inner">
+        <header class="section-header">
+          <p class="section-kicker">Foundations</p>
+          <h2>Mindset for a Career in Embedded Systems</h2>
+          <p class="section-lead">
+            The question I get most often is:
+            <em>“What should I do to prepare for the career ahead of me?”</em>
+            The answer is usually more about mindset and practice than grades.
+          </p>
+        </header>
+
+        <div class="columns-2">
+          <div>
+            <div class="callout-block">
+              <strong>Do Not Google the Answers.</strong><br>
+              Using Google or ChatGPT to chase solutions for these exercises
+              ruins the surprise, takes away the satisfaction of solving the problem,
+              and <strong>steals all possible benefit</strong>. The world needs better engineers,
+              not better web‑surfers.
+            </div>
+
+            <h3 style="margin-top:1.5rem;">Three principles</h3>
+            <ol>
+              <li>
+                Stick to your passion and interest and become as
+                proficient and experienced in that line as you can.
+              </li>
+              <li>
+                Always be working on a project.<br>
+                Like EE-design? Design.<br>
+                Like embedded software? Get a dev board and make all of the signals
+                renderable and readable &mdash; and actually render and read them.
+              </li>
+              <li>
+                Good grades and strong performance in class matter, but pick your
+                ultimate goal and stay focused on it.
+              </li>
+            </ol>
+          </div>
+
+          <div>
+            <h3>What interviews are really asking</h3>
+            <p>
+              Regardless of how the questions are phrased, most interviews are
+              trying to answer just two things:
+            </p>
+            <ul>
+              <li>What is your capacity for knowledge?</li>
+              <li>Do you have passion for the mission?</li>
+            </ul>
+
+            <p>
+              <strong>Capacity for knowledge</strong> is about whether you
+              come across as someone who wants to learn new things and is willing
+              to go deeper into every problem rather than skate on the surface.
+            </p>
+
+            <p>
+              <strong>Passion for the mission</strong> is about whether you
+              are just collecting a paycheck or genuinely want to see the
+              project, device, or system launch and succeed.
+            </p>
+            <p>
+              Would you buy the thing you're being asked to build?
+              Would you recommend it to someone else? If the answer is not
+              obvious, you may be interviewing for the wrong role.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Technical practice -->
+    <section id="technical" class="section section-alt">
+      <div class="section-inner">
+        <header class="section-header">
+          <p class="section-kicker">Technical</p>
+          <h2>Technical Practice &amp; Weekly Reps</h2>
+          <p class="section-lead">
+            These are the things you can do, repeatedly, to stack skill over time:
+            mentoring conversations, self‑tests, and small implementations you
+            rewrite from memory until they’re yours.
+          </p>
+        </header>
+
+        <div class="cards-3">
+          <article class="card">
+            <h3>Mentoring &amp; Course Help</h3>
+            <p>
+              If you need help with course work that involves ECE/CS, low‑level
+              software, or embedded systems (EE‑425, etc.), reach out directly:
+            </p>
+            <p>
+           <span class="email-obf"
+      data-x="aun@jgze-fww.tfd"
+      role="button"
+      tabindex="0">
+  Contact
+</span> 
+            </p>
+            <p>
+              If you are graduating soon, a conversation about what to expect and
+              how hiring managers think will increase your chances.
+            </p>
+            <p>
+              There is also a
+              <a href="mentor1.pdf" target="_blank">detailed guide (PDF)
+&#x2197;</a>
+              for topics to study and work through in your spare time.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3>The C-Test</h3>
+            <p>
+              If you believe you know C,<br> take
+              <a href="user-c-test.pdf" target="_blank">The C-Test&#x2197;</a>.
+            </p>
+            <p>
+              A solid result in about 15 minutes is the expectation. Use it as a
+              calibration tool rather than a grade.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3>Weekly C Functions</h3>
+            <p>
+              Pick a small, non‑trivial C function every week and re‑implement it
+              from scratch until you don’t have to think about it.
+            </p>
+            <p><strong>Examples:</strong></p>
+            <ul>
+              <li><code>malloc</code> backed by your own memory pool</li>
+              <li><code>memcpy</code> that considers overlapping memory</li>
+            </ul>
+          </article>
+        </div>
+
+        <div style="margin-top:2rem;" class="columns-2">
+          <div>
+            <h3>C: Implementing <code>malloc</code></h3>
+            <p>The signature:</p>
+            <pre><code>void *malloc(size_t size);</code></pre>
+            <p>Assume you have a pool:</p>
+            <pre><code>unsigned char mem[N];</code></pre>
+            <p>
+              where <code>N</code> is sufficiently large. Your
+              allocator should take from <em>that</em> pool so this usage works:
+            </p>
+            <pre><code>unsigned char *p = my_malloc(100);
+/* ... */
+my_free(p);</code></pre>
+          </div>
+          <div>
+            <h3>C: Implementing <code>memcpy</code></h3>
+            <p>The signature:</p>
+            <pre><code>void *memcpy(void *dest, const void *src, size_t n);</code></pre>
+            <p>
+              Start with the obvious implementation, then reason about
+              performance and overlapping memory regions. Explore what happens
+              when you accidentally implement <code>memmove</code> instead.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Challenges -->
+    <section id="challenges" class="section">
+      <div class="section-inner">
+        <header class="section-header">
+          <p class="section-kicker">Practice Problems</p>
+          <h2>C &amp; C++ Challenges</h2>
+          <p class="section-lead">
+            These aren’t graded assignments. They’re professional warm‑ups:
+            things to write, erase, and write again in different languages until
+            the patterns are part of how you think.
+          </p>
+        </header>
+
+        <div class="cards-2">
+          <article class="card">
+            <h3>C++: Pointers vs References</h3>
+            <p>
+              In your own words, can you explain the difference between a pointer
+              and a reference in C++? Write down examples that make the semantic
+              differences concrete.
+            </p>
+
+            <h3 style="margin-top:1.25rem;">C++: Class <code>Foo</code></h3>
+            <p>
+              Given this test harness, define and implement a class
+              <code>Foo</code> that makes it work:
+            </p>
+            <pre><code>// What must be inside this class definition
+// to make the test-case work?
+
+class Foo {
+    // ...
+};
+
+// Test harness
+int main() {
+    Foo a("foo");
+    Foo b(a);
+    std::cout &lt;&lt; "a = " &lt;&lt; a &lt;&lt; std::endl;
+    std::cout &lt;&lt; "b = " &lt;&lt; b &lt;&lt; std::endl;
+
+    Foo c("baz");
+    std::cout &lt;&lt; "c = " &lt;&lt; c &lt;&lt; std::endl;
+
+    c = b;
+    std::cout &lt;&lt; "c = " &lt;&lt; c &lt;&lt; std::endl;
+
+    Foo d = std::move(c);
+    std::cout &lt;&lt; "c = " &lt;&lt; c &lt;&lt; std::endl;
+    std::cout &lt;&lt; "d = " &lt;&lt; d &lt;&lt; std::endl;
+
+    return 0;
+}</code></pre>
+            <p>The expected output:</p>
+            <pre><code>a = { 3, "foo"}
+b = { 3, "foo"}
+c = { 3, "baz"}
+c = { 3, "foo"}
+c = { 0, "nil"}
+d = { 3, "foo"}</code></pre>
+            <p>
+              Think about ownership, copying, moving, and how you represent the
+              “length” and the “string” inside <code>Foo</code>  The main thrust
+              of the question has to do with how the instance of Foo is constructed. 
+            </p>
+          </article>
+
+          <article class="card">
+            <h3>Knight&apos;s Tour</h3>
+            <p>
+              Can a Knight start at any arbitrary square on a chessboard and,
+              making only legal moves, visit every other square once and only once?
+            </p>
+            <p>
+              Write a program that prints an 8&times;8 board where each square
+              contains the move number when the knight landed there.
+            </p>
+            <ul>
+              <li>Only one knight on the board.</li>
+              <li>Start from any location (your algorithm must work from all starts).</li>
+              <li>Visit every square exactly once.</li>
+              <li>Print the board as ASCII.</li>
+            </ul>
+            <div class="board-figure">
+              <img src="kntour.jpg" alt="Knight's Tour move illustration">
+              <figcaption>A knight moves in an L-shape: two in one direction, one perpendicular.</figcaption>
+            </div>
+            <p style="margin-top:0.75rem;">
+              After you write it in language X, rewrite it in language Y. Do it
+              again later from memory. The point is not the code you keep; it’s
+              the paths your brain builds.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Reading & fun -->
+    <section id="reading" class="section section-alt">
+      <div class="section-inner">
+        <header class="section-header">
+          <p class="section-kicker">Reading</p>
+          <h2>Fun Stuff &amp; Reading List</h2>
+          <p class="section-lead">
+            Some things to read and browse that have shaped the culture around
+            computing, systems, and hacking. None of this is required. It’s just
+            part of the ecosystem you’re stepping into.
+          </p>
+        </header>
+
+        <div class="cards-2">
+          <article class="card">
+            <h3>Fun Links</h3>
+            <ul>
+              <li>
+                <a href="unix.html" target="_blank">
+                  What is a Unix Wizard?&#x2197;<br>
+                <a href="primer.html" target="_blank">
+                  (and a primer)&#x2197;
+                </a>
+              </li>
+            </ul>
+
+            <h3 style="margin-top:1.25rem;">Programming</h3>
+            <p>
+              There are too many programming books to list. If you&apos;re on a
+              budget, these are worth owning and re‑reading:
+            </p>
+            <ul>
+              <li>
+                <a href="https://www.powells.com/book/c-programming-language-ansi-c-2nd-edition-9780131103627" target="_blank">
+                  The C Programming Language&#x2197;
+                </a> by Dennis Ritchie.
+              </li>
+              <li>
+                <a href="https://www.stroustrup.com/4th.html" target="_blank">
+                  The C++ Programming Language&#x2197;
+                </a> by Bjarne Stroustrup.
+              </li>
+              <li>
+                <a href="https://www.powells.com/book/advanced-programming-in-the-unix-environment-9780321637734" target="_blank">
+                  Advanced Programming in the Unix Environment&#x2197;
+                </a> by W. Richard Stevens.
+              </li>
+              <li>
+                <a href="https://www.powells.com/book/design-patterns-elements-of-reusable-object-oriented-software-9780201633610" target="_blank">
+                  Design Patterns&#x2197;
+                </a> by Gamma et al.
+              </li>
+              <li>
+                <a href="https://www.powells.com/book/hackers-delight-2nd-edition-9780321842688" target="_blank">
+                  Hacker&apos;s Delight&#x2197;
+                </a> by Henry Warren.
+              </li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <h3>Non‑fiction</h3>
+            <ul>
+              <li>
+                <a href="https://cacm.acm.org" target="_blank">
+                  Communications of the ACM&#x2197;
+                </a>
+              </li>
+              <li>
+                <a href="https://www.powells.com/book/hackers-25th-anniversary-edition-9781449388393" target="_blank">
+                  Hackers&#x2197;
+                </a> by Steven Levy. (This is NOT the story from the movie
+by the same name.  No connection whatsoever!)
+              </li>
+              <li>
+                <a href="https://www.powells.com/book/cuckoos-egg-tracking-a-spy-through-the-maze-of-computer-espionage-9781416507789" target="_blank">
+                  The Cuckoo&apos;s Egg&#x2197;
+                </a> by Cliff Stoll
+              </li>
+              <li>
+                <a href="https://www.powells.com/book/hacker-crackdown-law-disorder-on-the-electronic-frontier-9780553563702" target="_blank">
+                  The Hacker Crackdown&#x2197;
+                </a> by Bruce Sterling
+              </li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <p class="copyright">
+      &copy;&nbsp; 2025 Jeff Wandling
+    </p>
+
+    <p class="license">
+      This work is licensed under
+      <a href="https://creativecommons.org/licenses/by-sa/4.0/">
+        Creative Commons Attribution–ShareAlike 4.0 International (CC BY-SA 4.0)&#x2197;</a>
+    </p>
+
+    <nav class="footer-nav">
+      <a href="#home">Home</a>
+      <a href="#mindset">Mindset</a>
+      <a href="#technical">Technical</a>
+      <a href="#challenges">Challenges</a>
+      <a href="#reading">Reading</a>
+    </nav>
+  </div>
+</footer>
+
+
+</body>
+</html>

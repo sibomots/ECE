@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>UWB ECE | Primer for Understanding the Unix Hierarchy</title>
+  <style>
+    :root{
+      --bg:#070A0F;
+      --panel:#0C121B;
+      --panel2:#0A1018;
+      --text:#E8EEF7;
+      --muted:#A7B3C7;
+      --dim:#7D8AA1;
+      --accent:#19D3C5;
+      --accent2:#8B5CF6; /* violet */
+      --line:rgba(255,255,255,.10);
+      --shadow: 0 14px 50px rgba(0,0,0,.55);
+      --radius:18px;
+    }
+    html,body{height:100%;}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background: radial-gradient(900px 600px at 20% 10%, rgba(25,211,197,.16), transparent 55%),
+                  radial-gradient(900px 600px at 80% 0%, rgba(139,92,246,.14), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+      line-height:1.55;
+    }
+    a{color:var(--text); text-decoration-color: rgba(25,211,197,.55); text-underline-offset: 3px;}
+    a:hover{color:var(--accent);}
+
+    .skip{position:absolute; left:-9999px; top:auto; width:1px; height:1px; overflow:hidden;}
+    .skip:focus{left:16px; top:16px; width:auto; height:auto; padding:10px 12px; background:var(--panel); border:1px solid var(--line); border-radius:12px; z-index:9999;}
+
+    header{
+      position: sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter: blur(10px);
+      background: rgba(7,10,15,.75);
+      border-bottom:1px solid var(--line);
+    }
+    .navwrap{
+      max-width:1100px;
+      margin:0 auto;
+      padding:14px 18px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+    }
+    .brand{
+      display:flex;
+      align-items:baseline;
+      gap:10px;
+      white-space:nowrap;
+    }
+    .brand .logo{
+      font-weight:800;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:var(--text);
+    }
+    .brand .logo em{font-style:normal; color:var(--accent);}
+    .brand .tag{
+      color:var(--dim);
+      font-size:.92rem;
+    }
+    nav a{
+      color:var(--muted);
+      text-decoration:none;
+      font-weight:600;
+      font-size:.95rem;
+      padding:8px 10px;
+      border-radius:12px;
+    }
+    nav a:hover{color:var(--text); background: rgba(255,255,255,.06);}
+
+    main{max-width:1100px; margin:0 auto; padding:28px 18px 40px;}
+
+    .hero{
+      padding:22px 22px;
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(12,18,27,.92), rgba(10,16,24,.86));
+      box-shadow: var(--shadow);
+    }
+    .hero h1{margin:0 0 6px 0; font-size:1.8rem; letter-spacing:-.01em;}
+    .hero p{margin:0; color:var(--muted);}
+    .hero .meta{margin-top:10px; color:var(--dim); font-size:.95rem;}
+
+    .grid{display:grid; grid-template-columns: 1fr; gap:14px; margin-top:16px;}
+    @media (min-width: 900px){ .grid{grid-template-columns: 1.25fr .75fr;} }
+
+    .card{
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(12,18,27,.72);
+      box-shadow: 0 10px 30px rgba(0,0,0,.35);
+      overflow:hidden;
+    }
+    .card .hd{
+      padding:14px 16px;
+      border-bottom:1px solid var(--line);
+      background: rgba(255,255,255,.03);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .card .hd h2{margin:0; font-size:1.05rem; letter-spacing:.02em;}
+    .pill{
+      font-size:.82rem;
+      color: rgba(232,238,247,.92);
+      border:1px solid rgba(25,211,197,.35);
+      background: rgba(25,211,197,.10);
+      padding:5px 10px;
+      border-radius:999px;
+      white-space:nowrap;
+    }
+    .card .bd{padding:14px 16px;}
+
+    .level{margin:0 0 12px 0;}
+    .level h3{margin:0 0 4px 0; font-size:1.02rem; color:var(--text);}
+    .level ul{margin:8px 0 0 18px; padding:0;}
+    .level li{margin:7px 0; color:var(--muted);}
+    .level b{color:var(--text);}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
+
+    .codeblock{
+      margin:10px 0 0 0;
+      padding:12px 12px;
+      background: rgba(0,0,0,.25);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:14px;
+      color: rgba(232,238,247,.92);
+      overflow:auto;
+      white-space:pre;
+    }
+
+    .aside p{margin:0 0 10px 0; color:var(--muted);}
+    .aside .callout{
+      padding:12px 12px;
+      border-radius:14px;
+      border:1px solid rgba(139,92,246,.35);
+      background: rgba(139,92,246,.10);
+      color: rgba(232,238,247,.92);
+    }
+    .aside .callout strong{color:var(--text);}
+
+    footer{
+      border-top:1px solid var(--line);
+      padding:18px;
+      color:var(--muted);
+    }
+    .footwrap{max-width:1100px; margin:0 auto; display:block;}
+    .footwrap p{margin:6px 0; font-size:.92rem; line-height:1.4; white-space:normal;}
+    .footwrap a{color:var(--muted);}
+    .footwrap a:hover{color:var(--accent);}
+
+  </style>
+</head>
+<body>
+  <a class="skip" href="#content">Skip to content</a>
+
+  <header>
+    <div class="navwrap">
+      <a href="/uwece" class="brand">
+        <div class="tag">ECE resources</div>
+      </a>
+      <nav aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="primer.html" aria-current="page">Primer</a>
+        <a href="unix.html">USENET post</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="content">
+    <section class="hero">
+      <h1>Primer for Understanding the Unix Hierarchy</h1>
+      <p>This page is a modern companion to a classic 1986 
+<a target="top" href="https://en.wikipedia.org/wiki/Usenet">USENET&#x2197;</a> post describing "Unix wizardry" as a progression of tools, habits, and confidence.</p>
+      <div class="meta">Primary source: the original USENET posting (Oct 1986). See the post in <a href="unix.html">UNIX.html</a>.</div>
+    </section>
+
+    <div class="grid">
+      <section class="card">
+        <div class="hd">
+          <h2>Hierarchy, annotated</h2>
+        </div>
+        <div class="bd">
+
+          <div class="level">
+            <h3>Beginner</h3>
+            <ul>
+              <li><b>terminal</b> - Frequently, access to computer systems were provided as dumb-terminals connected to mainframe computers. A dumb-terminal was essentially a CRT display of 80 characters wide and 24 (or 25) lines deep, with the most un-ergonomic keyboard imaginable. There was no mouse, no windows, no task bar and definitely no color.</li>
+              <li><b>vi</b> - A visual editor. All editing function of the editor can be performed by keyboard. Your hands do not need to leave the keyboard. Same can be said about emacs. The same cannot be said for notepad/VisualStudio/Eclipse/etc.</li>
+            </ul>
+          </div>
+
+          <div class="level">
+            <h3>Novice</h3>
+            <ul>
+              <li><b>ls</b> - A command to list files.</li>
+              <li><b>C</b> - A computer programming language invented by Dennis Ritchie.</li>
+              <li><b>rm</b> - A command to remove files.</li>
+            </ul>
+          </div>
+
+          <div class="level">
+            <h3>User</h3>
+            <ul>
+              <li><b>nroff</b> - A typesetting tool. For an example, examine the source of any Unix man page:</li>
+            <div class="codeblock mono">$ gzip -dc /usr/share/man/man1/grep.1.gz  | less</div><p>
+            Side question -- what do the numbers mean?  Manual pages are organized
+in <b>sections:</b>  
+                <ul style="list-style-type:none;">
+                    <li> 1 - User commands (<b>ls, grep, awk,</b> etc.)
+                    <li> 2 - System calls (<b>open, read, close,</b> etc.)
+                    <li> 3 - Library calls (<b>libc, libm,</b> etc.)
+                    <li> 4 - Special files (Files found in <b>/dev</b>, etc.)
+                    <li> 5 - File formats and conventions (<b>/etc/passwd,</b> etc)
+                    <li> 6 - Games
+                    <li> 7 - Miscellaneous (conventions, macros, protocols)
+                    <li> 8 - System administration commands (<b>ifconfig,</b> etc)
+                    <li> 9 - (non standard section) Kernel routines and device driver information
+                </ul>
+            </ul>
+
+            <ul>
+              <li><b>pascal</b> - A structured programming language used heavily for teaching modular programming; later replaced by variants and then (more recently) by Java for instruction in many curricula.</li>
+              <li><b>dbx</b> - A type of debugger.</li>
+              <li><b>...how to read the news...</b> - Reading the news referred to the posting system called USENET</a></li>
+            </ul>
+          </div>
+
+          <div class="level">
+            <h3>Knowledgeable User</h3>
+            <ul>
+              <li><b>tbl, eqn</b> - Programs that can process textual data (see their man pages).</li>
+              <li><b>grep</b> - Finds patterns in files.</li>
+              <li><b>mv</b> - Moves files. In Unix: everything is a file.</li>
+              <li><b>sed</b> - A stream editor for pattern matching and replacement in pipelines.</li>
+              <li><b>make</b> - A tool to build things from rules (compile, generate, prepare, etc.).</li>
+            </ul>
+          </div>
+
+          <div class="level">
+            <h3>Expert</h3>
+            <ul>
+              <li><b>ex</b> - A line editor related to vi; useful when you cannot rely on full-screen terminal behavior.</li>
+              <li><b>csh</b> - Historically popular for interactive use; notorious for risky scripting.</li>
+            </ul>
+            <div class="codeblock mono">Never write scripts in csh.</div>
+            <ul>
+              <li><b>&amp;&amp;, ||</b> - Boolean operators in the shell:</li>
+            </ul>
+            <div class="codeblock mono">$ foo &amp;&amp; bar</div>
+          </div>
+
+          <div class="level">
+            <h3>Hacker</h3>
+            <ul>
+              <li><b>sed &amp; awk</b> - Text processing power tools; awk is named after Aho, Weinberger, and Kernighan.</li>
+              <li><b>cat &gt;</b> - Dictating code directly to a file without an editor (the fountain-pen crossword puzzle tactic).</li>
+              <li><b>adb</b> - Another debugger.</li>
+              <li><b>environment variables</b> - Variables inherited by child processes (vs. shell variables that are not). Example:</li>
+            </ul>
+            <div class="codeblock mono">$ x=42
+$ bash -c 'echo $x'   # prints nothing
+
+$ export y=99
+$ bash -c 'echo $y'   # prints 99</div>
+            <ul>
+              <li><b>Bourne shell (sh)</b> - Stephen Bourne (Bell Labs) wrote sh for scripting and portability; descendants include POSIX sh and bash.</li>
+              <li><b>...from the net...</b> - Acquiring patches via FTP or ordered tapes; later, downloading bug fixes and updates from the network.</li>
+            </ul>
+          </div>
+
+          <div class="level">
+            <h3>Guru</h3>
+            <ul>
+              <li><b>m4</b> - A general-purpose macro processor operating on plain text; powerful and dangerous via unrestricted expansion.</li>
+              <li><b>lex</b> - A generator for lexical analyzers from regular-expression token rules; traditionally paired with yacc.</li>
+              <li><b>James Woods/Henry Spencer</b> - Associated with extended grep/egrep implementations.</li>
+            </ul>
+          </div>
+
+          <div class="level">
+            <h3>Wizard</h3>
+            <ul>
+              <li><b>posts changes to Unix utilities to the net</b> - Public patch sharing, often via USENET.</li>
+              <li><b>Dennis, Bill, and Ken</b> - 
+<a  target="top" href="https://en.wikipedia.org/wiki/Dennis_Ritchie">Dennis Ritchie&#x2197;</a>,  <a target="top" href="https://en.wikipedia.org/wiki/Bill_Joy"> Bill Joy&#x2197;</a> (BSD), and <a target="top"  href="https://en.wikipedia.org/wiki/Ken_Thompson">Ken Thompson&#x2197;</a> (Unix origin).</li>
+            </ul>
+          </div>
+
+        </div>
+      </section>
+    </div>
+
+  </main>
+
+  <footer>
+    <div class="footwrap">
+      <p>© 2025 Jeff Wandling · UW Bothell ECE resources</p>
+      <p>This work is licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0) &#x2197;</a></p>
+    </div>
+  </footer>
+</body>
+</html>

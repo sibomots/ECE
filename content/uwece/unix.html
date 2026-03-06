@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>UWB ECE | What is a Unix Wizard? (USENET, 1986)</title>
+  <style>
+    :root{
+      --bg:#070A0F;
+      --panel:#0C121B;
+      --text:#E8EEF7;
+      --muted:#A7B3C7;
+      --dim:#7D8AA1;
+      --accent:#19D3C5;
+      --accent2:#8B5CF6;
+      --line:rgba(255,255,255,.10);
+      --radius:18px;
+    }
+    html,body{height:100%;}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background: radial-gradient(900px 600px at 20% 10%, rgba(25,211,197,.12), transparent 55%),
+                  radial-gradient(900px 600px at 80% 0%, rgba(139,92,246,.10), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+    }
+    a{color:var(--text); text-decoration-color: rgba(25,211,197,.55); text-underline-offset: 3px;}
+    a:hover{color:var(--accent);}
+
+    header{
+      position: sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter: blur(10px);
+      background: rgba(7,10,15,.75);
+      border-bottom:1px solid var(--line);
+    }
+    .navwrap{
+      max-width:1100px;
+      margin:0 auto;
+      padding:14px 18px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+    }
+    .brand{display:flex; align-items:baseline; gap:10px; white-space:nowrap;}
+    .brand .logo{font-weight:800; letter-spacing:.12em; text-transform:uppercase;}
+    .brand .logo em{font-style:normal; color:var(--accent);}
+    .brand .tag{color:var(--dim); font-size:.92rem;}
+    nav a{color:var(--muted); text-decoration:none; font-weight:600; font-size:.95rem; padding:8px 10px; border-radius:12px;}
+    nav a:hover{color:var(--text); background: rgba(255,255,255,.06);}
+
+    main{max-width:1100px; margin:0 auto; padding:28px 18px 40px;}
+
+    .hero{
+      padding:18px 20px;
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(12,18,27,.72);
+      margin-bottom:14px;
+    }
+    .hero h1{margin:0 0 6px 0; font-size:1.5rem; letter-spacing:-.01em;}
+    .hero p{margin:0; color:var(--muted); line-height:1.5;}
+
+    /* Preserve the old USENET feel */
+    .usenet{
+      border:1px solid rgba(255,255,255,.12);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(180deg, rgba(0,0,0,.40), rgba(0,0,0,.25)),
+        rgba(12,18,27,.72);
+      padding:16px 16px;
+      overflow:auto;
+      box-shadow: 0 14px 50px rgba(0,0,0,.55);
+    }
+    pre{
+      margin:0;
+      color: rgba(232,238,247,.92);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 14px;
+      line-height: 1.35;
+      white-space: pre; /* do not wrap */
+      tab-size: 8;
+    }
+
+    footer{
+      border-top:1px solid var(--line);
+      padding:18px;
+      color:var(--muted);
+    }
+    .footwrap{max-width:1100px; margin:0 auto;}
+    .footwrap p{margin:6px 0; font-size:.92rem; line-height:1.4; white-space:normal;}
+    .footwrap a{color:var(--muted);}
+    .footwrap a:hover{color:var(--accent);}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="navwrap">
+      <a href="/uwece" class="brand">
+        <div class="tag">ECE resources</div>
+      </a>
+      <nav aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="primer.html">Primer</a>
+        <a href="unix.html" aria-current="page">USENET post</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>What is a Unix Wizard? (USENET post, Oct 1986)</h1>
+    </section>
+
+    <section class="usenet" aria-label="USENET post">
+<pre>
+    From: gnu@hoptoad.uucp (John Gilmore)
+    Newsgroups: net.jokes,net.unix-wizards,net.unix
+    Subject: What is a Unix Wizard?
+    Date: 2 Oct 86 23:59:24 GMT
+
+    NAME		DESCRIPTION AND FEATURES
+
+    beginner
+		- insecure with the concept of a terminal
+		- has yet to learn the basics of vi
+		- has not figured out how to get a directory
+		- still has trouble with typing
+		  after each line of input
+    novice
+		- knows that "ls" will produce a directory
+		- uses the editor, but calls it "vye"
+		- has heard of "C" but never used it
+		- has had a bad experience with rm
+		- is wondering how to read mail
+		- is wondering why the person next door
+		  seems to like Unix so very much
+    user
+		- uses vi and nroff, but inexpertly
+		- has heard of regular expressions but never seen one.
+		- has figured out that '-' precedes options
+		- has attempted to write a C program but decided
+		  to stick with Pascal
+		- is wondering how to move a directory
+		- thinks that dbx is a brand of stereo component
+		- knows how to read mail and is wondering how
+		  to read the news
+    knowledgeable
+    user
+		- uses nroff with no trouble, and is beginning 
+		  to learn tbl and eqn
+		- uses grep to search for fixed strings
+		- has figured out that mv(1) will move directories
+		- has learned that "learn" doesn't help
+		- somebody has shown her how to write C programs
+		- once used sed but checked the file afterward
+		- watched somebody use dbx once
+		- tried "make" but used spaces instead of tabs
+    expert
+		- uses sed when necessary
+		- uses macros in vi, uses ex when necessary
+		- posts news at every possible opportunity
+		- is still wondering how to successfully reply to mail
+		- writes csh scripts occasionally
+		- writes C programs using vi and compiles with make
+		- has figured out what &amp;&amp;  and || are for
+		- uses fgrep because somebody said it was faster
+    hacker
+		- uses sed and awk with comfort
+		- uses undocumented features of vi
+		- writes C code with "cat &gt;" and compiles with "!cc"
+		- uses adb because she doesn't trust source debuggers
+		- figured out how environment variables are propagated
+		- writes her own nroff macros to supplement the standard
+		  ones
+		- writes Bourne shell scripts
+		- installs bug fixes from the net
+		- uses egrep because she timed it
+    guru
+		- uses m4 and lex with comfort
+		- writes assembler code with "cat &gt;>"
+		- uses adb on the kernel while the system is loaded
+		- customizes Unix utilities by patching the source
+		- reads device driver source with breakfast
+		- uses "ed" because "ex" is a Berkeleyism
+		- can answer any unix question after a little thought
+		- uses make for anything that requires two or more commands
+		- has learned how to breach security but no longer
+		  needs to try
+		- is putting James Woods/Henry Spencer egrep into her
+		  next Unix release
+    wizard
+		- writes device drivers with "cat &gt;"
+		- fixes bugs by patching the binaries
+		- posts her changes to Unix utilities to the net --
+		  and they work
+		- can tell what question you are about to ask, and answer it
+		- writes her own troff macro packages
+		- is on a first-name basis with Dennis, Bill, and Ken</pre>
+    </section>
+  </main>
+</body>
+</html>
