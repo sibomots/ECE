@@ -1,0 +1,194 @@
+%% Copyright 2026
+%% Licensed under Creative Commons Attribution–ShareAlike 4.0 International (CC BY-SA 4)
+
+\documentclass[12pt]{article}
+
+% \usepackage[cm]{fullpage}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{tcolorbox}
+\usepackage[makeroom]{cancel}
+\usepackage{tikz}
+
+\title{Solution Notes for 12-Ball Problem}
+\date{June 1, 1999}
+
+% no indent for whole document
+\setlength\parindent{0pt}
+
+\begin{document}
+\maketitle
+
+\section*{The 12-ball  Problem}
+
+\begin{itemize}
+\item 12 balls are identical in every way, except one is either lighter or heavier than the rest  (Think featureless billiard balls).  Among the 12 balls is an {\textbf{odd ball}}.
+\item One of the balls is odd -- it's either {\textbf{lighter}} or
+{\textbf{heavier}} than the other 11 balls. You cannot tell which ball is odd
+by visual inspection.  
+\item You must use a simple balance scale to identify the {\textit{odd ball}} AND
+determine what {\textit{kind}} of ball it is (light or heavy).
+
+\end{itemize}
+
+\subsection*{Limits}
+\begin{enumerate}
+\item You're allowed to use a balance-scale to weigh any the balls in any
+ combination you wish.  For sake of clarity, each application of the scale
+is called a {\textbf{weighing}}.  You are allowed only {\textbf{three}} weighings.
+\item You are allowed to place any balls from the set of 12 balls on the balance scale only.
+\end{enumerate}
+
+\section*{Soluition}
+
+The following pages describe the solution.  {\textsc{Stop reading now}} unless
+you want the solution given to you.
+
+
+\newpage
+\section*{Solution}
+
+
+First some notation:\\[2mm]
+
+\begin{itemize}
+\item Let the balls be a set $B = { b_1, b_2, b_3, \ldots, b_{12}}$
+\item This is the notation that ball $b_1$ is ball 1, and $b_{9}$ is ball 9, and so on.
+\item Each weighing event is identified as $W_1$, $W_2$, and $W_3$.
+\item If we know a ball is normal, we just refer to it as $b_N$. It's identity is meaningless.
+\item If we know a ball is heavy (and not light), we refer to it as $b_{\textrm{heavy}}$.
+\item If we know a ball is light (and not heavy), we refer to it as $b_{\textrm{light}}$.
+
+\end{itemize}
+
+\subsection*{First Weighing $W_1$}
+
+$W_1$ = (left-side) ${ b_1, b_2, b_3, b_4}$ against (right-side) ${b_5, b_6, b_7, b_8}$.
+
+If the scale is even, then record Possibly Heavy (PH), Possibly Light (PL), and Normal (N) as:
+
+\begin{align*}
+N &= {b_1, b_2, b_3, b_4, b_5, b_6, b_7, b_8}\\
+PH  &= {b_9, b_{10}, b_{11}, b_{12}}\\
+PL  &= {b_9, b_{10}, b_{11}, b_{12}}
+\end{align*}
+
+If the scale is heavy left,  then record:
+
+\begin{align*}
+PH &= {b_1, b_2, b_3, b_4}\\
+PL &= {b_5, b_6, b_7, b_8}\\
+N  &= {b_9, b_{10}, b_{11}, b_{12}}
+\end{align*}
+
+If the scale is heavy right, then record:
+
+\begin{align*}
+PH &= {b_5, b_6, b_7, b_8}\\
+PL &= {b_1, b_2, b_3, b_4}\\
+N  &= {b_9, b_{10}, b_{11}, b_{12}}
+\end{align*}
+
+\subsection*{Second Weighing $W_2$}
+
+\subsubsection*{$W_1$ was balanced}
+
+If $W_1$ was balanced, then the odd ball is among ${b_9, b_{10}, b_{11}, b_{12}}$, then\\
+
+$W_2$ = (left-side) ${b_N, b_N, b_9, b_{10}}$ against (right-side) ${b_N, b_N, b_{11}, b_{12}}$.\\
+
+Observe which way the scale moves.\\
+
+If it is heavy-left, then record:
+\begin{align*}
+PH &= {b_9, b_{10}}\\
+PL &= {b_{11}, b_{12}}
+\end{align*}
+
+If it is heavy-right, then record:
+\begin{align*}
+PL &= {b_9, b_{10}}\\
+PH &= {b_{11}, b_{12}}
+\end{align*}
+
+It cannot be balanced since the balls ${b_9, \ldots, b_{12}}$ did not participate in the even weighing event $W_1$.  Go to ${W_3}$.
+
+
+\subsubsection*{$W_1$ was heavy left}
+
+From $W_1$ we know this:
+
+\begin{align*}
+PH &= {b_1, b_2, b_3, b_4}\\
+PL &= {b_5, b_6, b_7, b_8}\\
+N  &= {b_9, b_{10}, b_{11}, b_{12}}
+\end{align*}
+
+We will isolate one ball from each side.\\
+
+$W_2$ = (left-side) ${b_9, b_{10}, b_4, b_5}$ against (right-side) ${b_{11}, b_{12}, b_3, b_6}$.\\
+
+If heavy left, then record:
+
+\begin{align*}
+PH &= {b_4}\\
+PL &= {b_6}\\
+N  &= {b_1, b_2, b_3, b_5, b_7, b_8, b_9, b_{10}, b_{11}, b_{12}}
+\end{align*}
+
+If heavy right, then record:
+\begin{align*}
+PH &= {b_3}\\
+PL &= {b_5}\\
+N  &= {b_1, b_2, b_4, b_6, b_7, b_8, b_9, b_{10}, b_{11}, b_{12}}
+\end{align*}
+
+\subsubsection*{$W_1$ was heavy right}
+
+From $W_1$ we know this:
+
+\begin{align*}
+PH &= {b_5, b_6, b_7, b_8}\\
+PL &= {b_1, b_2, b_3, b_4}\\
+N  &= {b_9, b_{10}, b_{11}, b_{12}}
+\end{align*}
+
+We will isolate one ball from each side. \\
+$W_2$ = (left-side) ${b_9, b_{10}, b_8, b_1}$ against (right-side) ${b_{11}, b_{12}, b_7, b_2}$.\\
+
+
+If heavy-left, we record:
+\begin{align*}
+PH &= {b_8}\\
+PL &= {b_5}\\
+N  &= {b_1, b_2, b_4, b_6, b_7, b_8, b_9, b_{10}, b_{11}, b_{12}}
+\end{align*}
+
+
+
+\subsection*{Third Weighing $W_3$}
+
+\subsubsection*{$W_2$ was heavy-left}
+
+If $W_2$ was heavy-left, then:\\
+
+${W_3}$ = (left-side) ${b_N, b_N, b_9, b_{11}}$ against (right-side) ${b_N, b_N, b_N, b_N}$.\\
+
+Observe the scale.\\
+
+If $W_3$ is heavy-left, then $b_{\textrm{heavy}} = b_9$. ($b_{11}$ cannot be both heavy and light)\\
+If $W_3$ is heavy-right, then $b_{\textrm{light}} = b_{11}$ ($b_9$ cannot be both heavy and light,
+and $b_{11}$ moved right to left)\\
+
+\subsubsection*{$W_2$ was heavy-right}
+
+If $W_2$ was heavy-right, then:\\
+
+$W_3$ = (left-side) ${b_N, b_N, b_{10}, b_{12}}$ against (right-side) ${b_N, b_N, b_N, b_N}$.\\
+If $W_3$ is heavy-left, then $b_{\textrm{heavy}} = b_{10}$. ($b_{12}$ cannot be both heavy and light)\\
+If $W_3$ is heavy-right, then $b_{\textrm{light}} = b_{12}$ ($b_{12}$ moved from right to left)\\
+
+
+
+\end{document}
+

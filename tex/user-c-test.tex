@@ -1,0 +1,246 @@
+%% Copyright 2026
+%% Licensed under Creative Commons Attribution–ShareAlike 4.0 International (CC BY-SA 4)
+
+\documentclass[12pt]{article}
+\usepackage{titling}
+\usepackage{listings}
+\usepackage{xcolor}
+%% \usepackage{fontspec}
+
+\usepackage{sourcecodepro}
+
+\newcommand{\NULL}{{\texttt{NULL}}}%
+\newcommand{\cvolatile}{{\texttt{volatile}}}%
+\newcommand{\cdefine}{{\texttt{\#define}}}%
+\newcommand{\cstatic}{{\texttt{static}}}%
+\newcommand{\cconst}{{\texttt{const}}}%
+\newcommand{\cCC}{{\texttt{C/C++}}}%
+\newcommand{\cC}{{\texttt{C}}}%
+
+\lstset{ %
+   %%numbers=left,   
+   %%stepnumber=2,
+   %%numbersep=5pt,
+   %% numberstyle=\footnotesize,
+   language=C++,
+   basicstyle=\footnotesize\ttfamily,
+   breaklines=true,
+   frame=shadowbox,
+}
+
+\author{spinoff@protonmail.com}
+\date{August 27, 2021}
+
+\title{So, you want to be an \\embedded software engineer?}
+
+\begin{document}
+\begin{titlingpage}
+\maketitle
+\begin{abstract}
+This document focuses on the core
+competency of C language programming and basics for 
+embedded software engineering.  Among many other things
+that are important, strong knowledge of C is critical for
+success.
+\end{abstract}
+\par
+\vskip1cm
+{\textsc{version 1.1}}
+\vskip5mm
+
+\end{titlingpage}
+
+\section{Introduction}
+
+Where noted ($\ddagger$), these questions were stolen from an article
+in Embedded Systems Journal in 2002.
+
+When I first read the questions back then it occurred to me that some work needed to be
+done within the company I was with at the time to enhance our test for prospective 
+engineers.  I've dragged this list around with me since.
+
+The nature of these questions is not to be misinterpreted -- a candidate should know
+how to solve all these problems. Otherwise, they usually are not hired.
+
+Here we go! 
+
+\section{The C-Test}
+
+\begin{enumerate}
+
+\item $\ddagger$ Using the \cdefine\ directive, how would you declare a manifest
+constant that is the number of seconds in a year (Disregard leap year in your
+answer).
+\par
+
+\item $\ddagger$ Write the ``standard'' {\texttt{MIN}} macro such that the macro takes two arguments
+and resolves to the value of the minimum of the arguments.
+\newpage
+Comment on this code:
+\begin{lstlisting}
+int a;
+int b;
+int *pa = &a;
+
+// ...
+
+int r = MIN(*pa++, b);
+
+\end{lstlisting}
+
+\item $\ddagger$ What is the purpose of the pre-processor directive {\texttt{\#error}} ?
+
+
+\item $\ddagger$ Infinite loops often arise in embedded systems. How do you code an infinite loop?
+
+
+\item $\ddagger$ Using the symbol {\texttt{x}}, give the declarations for the following:
+\begin{itemize}
+\item An integer.
+\item A pointer to an integer.
+\item A pointer to a pointer to an integer.
+\item An array of ten integers.
+\item An array of ten pointers to integers.
+\item A pointer to an array of ten integers
+\item A pointer to a function that takes an integer argument  and returns an integer.
+\item An array of ten pointers to functions that each take an integer argument and each return an integer.
+\end{itemize}
+
+\item $\ddagger$ What are the uses of the keyword {\texttt{static}} ?
+
+
+\item $\ddagger$ What does the keyword \cconst\  mean?
+
+Also, this leads to a set of questions here that should be addressed.
+Comment on what each of these declarations mean:
+
+\begin{itemize}
+\item  {\texttt{const int x;}}
+\item {\texttt{int const x;}}
+\item {\texttt{int* const x;}}
+\item {\texttt{const int* x;}}
+\item {\texttt{const int* const x;}}
+\end{itemize}
+
+\end{enumerate}
+
+\section{Getting Warmed Up}
+
+By now you should have a good idea of the candidate's {\texttt{C}} capabilities.
+But we still need to dig deeper.
+\par
+\begin{enumerate}
+\item $\ddagger$ What does the keyword {\texttt{volatile}} mean?  Give three examples
+of its use.
+
+Can a ``variable'' in C be both {\texttt{volatile}}
+and {\texttt{const}}?
+Ask the candidate to comment on this code:
+\begin{lstlisting}
+const volatile int* preg;
+\end{lstlisting}
+
+\item $\ddagger$ Embedded systems often require the manipulation of bits in
+registers or other parameters.  Given a variable 
+{\texttt{unsigned int x}}, show how to:
+  \begin{itemize}
+    \item Set bit 3 of {\texttt{x}} (the fourth bit)
+    \item Clear bit 3 of {\texttt{x}}
+  \end{itemize}
+
+\item $\ddagger$ Comment on this code and explain what is the output (and why)?
+
+\begin{lstlisting}
+void foo(void)
+{
+    unsigned int a = 6;
+    int b = -20;
+    
+    ( a + b  > 6 ) ? puts("> 6\n") :
+                     puts("<= 6\n");
+}
+\end{lstlisting}
+
+\end{enumerate}
+
+\section{Downhill now}
+
+At this point we are nearing the end of the test.  If the candidate
+is demoralized then that's a bad sign. They should have been able
+to whip through these questions so far without a sweat.
+
+But now we're going to get more elaborate in our questions and stray
+beyond the pure syntax and use of {\texttt{C}} in the embedded system
+scenario.
+
+\begin{enumerate}
+\item $\ddagger$ {\texttt{typedef}} is frequently used in C to declare a complex
+data structure.   It's also possible to use the pre-processor to do
+something similar.  For instance, consider the following code:
+
+\begin{lstlisting}
+#define dPS struct s *
+
+// or..
+
+typedef struct s* tPS;
+\end{lstlisting}
+
+\item Although it is not common in an embedded system, there are RTOS
+in the industry that do synthesize some dynamic memory allocation
+routines.  So, explain the the problem of using dynamic memory
+in an embedded software application.  Describe the issues. Start 
+with this simple question -- explain the difference between heap, 
+free-store, and the stack?
+
+A follow up question is:   Can you explain why I would want to avoid
+too many Tasks in an application that uses an RTOS?  How many is too many?
+What else should I be concerned about when I have a lot of tasks in an
+embedded software application?
+
+\item What is the difference between Heap and Stack?
+
+\item Comment on this code.  What does it do?  Why?
+
+\begin{lstlisting}
+char* ptr;
+if (( ptr = (char *) malloc (0)) == NULL )
+{
+     puts ( " got a null pointer " );
+{
+else
+{
+     puts ( " got a valid pointer " );
+}
+\end{lstlisting} 
+
+\end{enumerate}
+
+%%
+%%
+%%\section{Abstraction}
+%%
+%%In this section we're going to cover more abstract issues and concepts
+%%that can be asked during the interview for a potential embedded software
+%%engineer (or any software engineer for that matter).
+%%
+%%These questions are not specific to embedded software, but there is
+%%a common set of knowledge that software engineers should know before
+%%moving forward in the review process.
+%%
+%%\par
+%%
+%%\begin{enumerate}
+%%
+%%\item What makes a good API?
+%%\item What features in C++ make it object-oriented?
+%%\item How is data hidden from other classes in C++ ?
+%%\item What is a virtual function in C++?
+%%\item (C++ only) What is the difference between a pointer and a reference?
+%%\item What are the key differences between C and C++?
+%%
+%%%% Section
+%%\end{enumerate} 
+
+\end{document}
+

@@ -1,0 +1,1298 @@
+%% Copyright 2026
+%% Licensed under Creative Commons Attribution–ShareAlike 4.0 International (CC BY-SA 4)
+
+\documentclass[12pt]{article}
+\usepackage{titling}
+\usepackage{listings}
+\usepackage{xcolor}
+%% \usepackage{fontspec}
+
+\usepackage{sourcecodepro}
+
+\newcommand{\NULL}{{\texttt{NULL}}}%
+\newcommand{\cvolatile}{{\texttt{volatile}}}%
+\newcommand{\cdefine}{{\texttt{\#define}}}%
+\newcommand{\cstatic}{{\texttt{static}}}%
+\newcommand{\cconst}{{\texttt{const}}}%
+\newcommand{\cCC}{{\texttt{C/C++}}}%
+\newcommand{\cC}{{\texttt{C}}}%
+
+\lstset{ %
+   numbers=left,   
+   stepnumber=2,
+   numbersep=5pt,
+   numberstyle=\footnotesize,
+   language=C++,
+   basicstyle=\footnotesize\ttfamily,
+   breaklines=true,
+   frame=shadowbox,
+}
+
+\author{spinoff@protonmail.com}
+\date{August 27, 2021}
+
+\title{So, you want to be an \\embedded software engineer?}
+
+\begin{document}
+\begin{titlingpage}
+\maketitle
+\begin{abstract}
+A lot of ink has been used to describe the requirements for
+a good embedded software engineer.  This document focuses on the core
+competency of an embedded software engineer. Good luck.
+\end{abstract}
+\par
+\vskip1cm
+{\textsc{version 1.0}}
+\vskip5mm
+
+\end{titlingpage}
+
+\section{Introduction}
+
+Where noted ($\ddagger$), these questions were stolen from an article
+in Embedded Systems Journal in 2002.
+
+When I first read the questions back then it occurred to me that some work needed to be
+done within the company I was with at the time to enhance our test for prospective 
+engineers.  I've dragged this list around with me since.
+
+The nature of these questions is not to be misinterpreted -- a candidate should know
+how to solve all these problems. If they cannot, they just cannot be hired.
+
+I could see perhaps a new graduate not having enough experience but there's a certain
+cut-off where the answers should just flow out rapidly.  I'll mark in the document
+where that cut-off should be.
+
+
+Here we go! 
+
+\section{The C-Test}
+
+\begin{enumerate}
+
+\item $\ddagger$ Using the \cdefine\ directive, how would you declare a manifest
+constant that is the number of seconds in a year (Disregard leap year in your
+answer).
+\par
+What we're looking for here is something like this. Your candidate answer may
+vary but the point is clear:
+\par
+\begin{lstlisting}
+#define DAYS_PER_YEAR (365)
+#define HOURS_PER_DAY (24)
+#define MINUTES_PER_HOUR (60)
+#define SECONDS_PER_MINUTE (60)
+#define SECONDS_PER_DAY (SECONDS_PER_MINUTE * MINUTES_PER_HOUR * HOURS_PER_DAY)
+#define SECONDS_PER_YEAR (SECONDS_PER_DAY * DAYS_PER_YEAR)
+\end{lstlisting}
+
+\begin{itemize}
+\item Did they use some logical build-up of the answer? or did they just write:
+\begin{lstlisting}
+#define SECONDS_PER_YEAR (31536000)
+\end{lstlisting}
+Why is that a bad idea?  What's good about it? 
+\item Did they name the manifest constant clearly?
+\item Did they enclose the values in {\texttt{( )}}?
+\item Did they mark the values with {\texttt{U}} (for unsigned) ?  Does it matter? Why or why not?
+\item Why do we use \cdefine\  rather than:
+\begin{lstlisting}
+const unsigned int SECONDS_PER_YEAR = 315360000U;
+\end{lstlisting}
+What's the impact? What's the difference between that and using \cdefine?
+\end{itemize}
+
+\item $\ddagger$ Write the ``standard'' {\texttt{MIN}} macro such that the macro takes two arguments
+and resolves to the value of the minimum of the arguments.
+\par
+We're looking for something like this:
+\par
+\begin{lstlisting}
+#define MIN(x,y) (((x) < (y)) ? (x) : (y))
+\end{lstlisting}
+\par
+Did they guard the values with parentheses?
+
+\par
+So, they probably did OK and wrote a macro like that.. So let's dig deeper:
+
+Comment on this code:
+\begin{lstlisting}
+int a;
+int b;
+int *pa = &a;
+// ...
+int r = MIN(*pa++, b);
+\end{lstlisting}
+
+There's a lot to unpack here.  Here's what the compiler sees:
+\begin{lstlisting}
+int r = (((*pa++) < (b)) ? (*pa++) : (b));
+\end{lstlisting}
+
+What is wrong with this scenario? Did they find the possibility that whatever {\texttt{pa}} is pointing to is incrementing
+twice?  The side effects are bad.  Did they comment/find this problem?
+
+\item $\ddagger$ What is the purpose of the pre-processor directive {\texttt{\#error}} ?
+
+They either know this or they do not.  If they don't, then they have likely not done any embedded software
+development that had significant use of headers which differentiate a platform, or a compiler, or something
+else that would be correct or incorrect code for a scenario.
+
+If that's true -- they've never seen {\texttt{\#error}}, I'm not sure I want them working on embedded software.
+It's not that the topic is difficult to understand. It's indication that their experience is too light. And,
+we're not looking for people barely qualified for embedded software.
+
+\item $\ddagger$ Infinite loops often arise in embedded systems. How do you code an infinite loop?
+
+There are just a few ways to do this, and they are all correct.  But which one they pick tells
+a lot about background.
+
+Most go this way:
+
+\begin{lstlisting}
+while(1)
+{
+   do_whatever();
+}
+\end{lstlisting}
+
+A few go this way:
+\begin{lstlisting}
+for(;;) 
+{
+   do_whatever();
+}
+\end{lstlisting}
+
+And even smaller subset might go this way:
+\begin{lstlisting}
+foo:
+   do_whatever();
+   goto foo;
+\end{lstlisting}
+
+
+Now, the first answer usually indicates a very correct answer that works everywhere that {\texttt{1}} means true.
+In some languages like {\texttt{C\#}}, this would not be the case.  In \cCC\ it will work fine.
+This candidate would fit in fine and would be able to survive anywhere.
+
+\par
+The next one -- the {\texttt{for}} loop is also OK.  It's a little pedantic.  People will understand it.  But it's
+not what we hope to see.  It works, it's not incorrect.  But the syntax isn't clean in meaning by reading it.
+\par
+
+The last one -- {\texttt{goto}} ... Now this is a two edged sword.  It would be odd to get this answer
+{\textit{unless}} they were an assembly language developer at heart.  That's good and bad.  It's good that
+they are experienced at low level software.  It's bad because we haven't discovered if they know enough about \cC.  If you get this answer -- be careful with this candidate to fully understand 
+their \cC\ experience.
+
+
+\item $\ddagger$ Using the symbol {\texttt{x}}, give the declarations for the following:
+\begin{itemize}
+\item An integer.
+\item A pointer to an integer.
+\item A pointer to a pointer to an integer.
+\item An array of ten integers.
+\item An array of ten pointers to integers.
+\item A pointer to an array of ten integers
+\item A pointer to a function that takes an integer argument  and returns an integer.
+\item An array of ten pointers to functions that each take an integer argument and each return an integer.
+\end{itemize}
+
+What we're looking for is quite simple.  And, frankly if this question is missed, the interview is over.
+
+Here's what we want to see:
+\begin{itemize}
+\item An integer. {\texttt{int x;}}
+\item A pointer to an integer. {\texttt{int* x;}}
+\item A pointer to a pointer to an integer. {\texttt{int** x;}}
+\item An array of ten integers. {\texttt{int x[10];}}
+\item An array of ten pointers to integers. {\texttt{int* x[10];}}
+\item A pointer to an array of ten integers  {\texttt{int (*x)[10];}}  (this one may catch your candidate.)
+\item A pointer to a function that takes an integer argument  and returns an integer.
+  {\texttt{ int (*x)(int); }}
+\item An array of ten pointers to functions that each take an integer argument and each
+return an integer.  {\texttt{ int (*x[10])(int); }}
+\end{itemize}
+
+These are the kinds of questions that may seem nit-picky.  They are.  And some may argue that
+it would require the candidate to a bit of preparation ahead of time to be sure they
+grok all the ways to declare things.  If they weren't prepared for the interview to know this,
+then what are they prepared for?
+
+\item $\ddagger$ What are the uses of the keyword {\texttt{static}} ?
+
+A surprising number of candidates will not get all three answers, and a few will
+outright not understand the differences between the usages.
+
+\begin{itemize}
+\item Function scope:  ``A \cstatic\ automatic variable in a function
+retains it's last value between function calls.''
+\item Module scope:  ``A \cstatic\ variable in a file (aka the module)
+is accessibly only from functions within the same module.  A localized global variable.''  The 
+variable is private to the module.
+\item Module scope:  ``A \cstatic\ function in a file (aka a module)
+is accessible only from functions within the same module. A localized function.''  The function
+is private to the module.
+\end{itemize}
+
+This is one of those questions that either ends the interview or lets it proceed.
+
+Any embedded software engineer applying should know this answer.
+
+\item $\ddagger$ What does the keyword \cconst\  mean?
+
+The question was about the meaning, not about what it does.  Let's focus on
+the meaning.  \cconst\ means {\textsc{read only}}.  It does not
+nor has it ever meant ``constant''.  If the candidate says ``constant'',
+the interview is over.
+
+The details:  The meaning is that a \cconst\ thing cannot be changed
+after it has been assigned.  It's (wait for it) {\textsc{read only}}.
+
+\par
+Comment on this code:
+\begin{lstlisting}
+const int x;
+const int y = 10;
+// ...
+x = 11;
+\end{lstlisting}
+
+\par
+Here we're being crystal clear:  We are assigning {\texttt{y = 10}} and after that, the
+value of {\texttt{y}} cannot be changed. It's read-only.  Immutable.
+It does not mean constant. Here's why:
+
+\begin{lstlisting}
+const unsigned int* preg = (unsigned int*)(REGISTER_BASE_ADDRESS);
+// ...
+
+unsigned int tmp = *preg;
+while ( tmp & 0x10 )
+{
+   // ...
+   tmp = *preg;
+}
+\end{lstlisting}
+
+{\texttt{preg}} points to a {\texttt{const unsigned int}}.  The value can change
+because it's pointing to (perhaps) some register.  We're not allowed to change
+the value in the code, but surely the value can be changed by the hardware
+that it represents.
+
+It's read-only.  It's surely not constant.  We covered what a constant
+was in the first question.
+
+That's the difference.
+
+This leads to a set of questions here that should be addressed.
+Comment on what each of these declarations mean:
+
+\begin{itemize}
+\item  {\texttt{const int x;}}
+\item {\texttt{int const x;}}
+\item {\texttt{int* const x;}}
+\item {\texttt{const int* x;}}
+\item {\texttt{const int* const x;}}
+\end{itemize}
+
+The first two are the same.\\
+The third is a \cconst\ pointer to a non-\cconst\ integer.
+The pointer is read-only, the integer it points to is not read-only.\\
+The fourth is a pointer to a \cconst\ integer.  The pointer
+is not read-only.  The integer is read-only.\\
+The fifth is a {\texttt{const}} (read-only) pointer to a {\texttt{const}}
+(read-only) integer.  The pointer nor the integer it points to can be
+modified by the code.
+
+We hope the candidate brings up a final point -- the {\texttt{const}}-ness of
+something helps the programmer and the user of the software interface understand
+what the intent of the code is.  It helps to prevent actions to be compiled into
+code that would cause unintended consequences or reveal a capability that doesn't
+exist.  It's a hint to the programmer.  It's also a hint to the compiler and
+linker for where items that are {\texttt{const}} are held in the final 
+software product.  This differentiation is sometimes important.  Sometimes
+it's very important.
+
+An embedded software engineer knows this.  An API programmer doesn't care.
+\end{enumerate}
+
+\section{Getting Warmed Up}
+
+By now you should have a good idea of the candidate's {\texttt{C}} capabilities.
+But we still need to dig deeper.
+\par
+\begin{enumerate}
+\item $\ddagger$ What does the keyword {\texttt{volatile}} mean?  Give three examples
+of its use.
+
+Again, let's focus on the meaning.  It technically means ``A value
+that can change unexpectedly.''
+
+That is the text-book definition in the context of {\texttt{C/C++}}.
+
+It's not really appropriate to get into the {\textit{implementation details}}
+of how a compiler will interpret the {\texttt{volatile}} keyword.  What is
+important is the intent of the keyword and where/why it is used.
+
+Have the candidate comment on this code:
+
+\begin{lstlisting}
+int square(volatile int* px)
+{
+   return *px * *px;
+}
+\end{lstlisting}
+
+Follow up questions:
+\begin{itemize}
+\item Is there a defect with that code?  The answer is yes.
+The argument is a {\texttt{volatile int}}. Specifically, it's
+a pointer to a {\texttt{volatile int}}.  What the code does,
+as written, is dereference the value of this {\texttt{volatile int}}
+and multiply it by the value of this {\texttt{volatile int}}. 
+The problem is with the value as the expression is evaluated.
+It is not guaranteed that the value of the first {\texttt{*px}}
+is the same as the value of the second {\texttt{*px}}.  
+Whatever {\texttt{px}} pointed to can change as the expression
+is evaluated.  Therefore it won't be guaranteed to compute the
+square of the value {\texttt{*px}}.
+\item Is there a fix to this?  The answer is yes.
+\begin{lstlisting}
+int square(volatile int* px)
+{
+   int x = *px;
+   return x * x;
+}
+\end{lstlisting}
+Capture the value at the onset of the function. Square it
+(the captured value is not volatile), and then return the
+result.
+\end{itemize}
+
+\item Can a ``variable'' in C be both {\texttt{volatile}}
+and {\texttt{const}}?
+Ask the candidate to comment on this code:
+\begin{lstlisting}
+const volatile int* preg;
+\end{lstlisting}
+
+The answer is that it is perfectly fine to use code like
+this for the situation where the value that {\texttt{preg}}
+points to (a {\texttt{const volatile}} will change
+unexpectedly {\textit{and}} be read-only. A perfect situation
+for a register value.
+
+\par
+So in a nutshell, let us not get wrapped around the axle on what the compiler
+does when it encounters the \cvolatile\ keyword.  The take-home message is that
+the compiler is being instructed to treat that value as something which will
+change unexpectedly.  Even if it doesn't.  The compiler will treat it as it does, and
+that means fetching the value from whatever source is done whenever the value is needed.
+Yes, the literature will say ``it means that the compiler will not optimize away the
+read/write to that variable.''  Yes, but the meaning of what the keyword is is more important.
+What a compiler does (a vendor specific issue) is only just partially related to the answer.
+\par
+So in the example of {\texttt{square()}}, that put a light on the defect where we did not
+capture the value once, and use the safe captured value to compute the square.
+
+\item $\ddagger$ Embedded systems often require the manipulation of bits in
+registers or other parameters.  Given a variable 
+{\texttt{unsigned int x}}, show how to:
+  \begin{itemize}
+    \item Set bit 3 of {\texttt{x}} (the fourth bit)
+    \item Clear bit 3 of {\texttt{x}}
+  \end{itemize}
+
+The candidate either knows this or they do not.  There is no
+{\textit{half-way}} answer.
+
+What we are looking for is this:
+
+\begin{lstlisting}
+#define SET_BIT(a,n) (a) |= (1 << (n))
+#define CLEAR_BIT(a, n) (a) &= ~(1 << (n))
+// ...
+unsigned int y;
+// ...
+SET_BIT(y, 3);
+CLEAR_BIT(y, 3);
+\end{lstlisting}
+
+If the candidate does not choose to write a general use macro, then
+an answer like this is sufficient:
+\begin{lstlisting}
+y |= (1 << 3);
+y &= ~(1 << 3);
+\end{lstlisting}
+
+Here we're just looking for is the operators {\texttt{|=, \&=, and \~}}.
+
+A candidate who cannot get this answered isn't hired.
+
+
+\item $\ddagger$ Comment on this code and explain what is the output (and why)?
+
+\begin{lstlisting}
+void foo(void)
+{
+    unsigned int a = 6;
+    int b = -20;
+    
+    ( a + b  > 6 ) ? puts("> 6\n") :
+                     puts("<= 6\n");
+}
+\end{lstlisting}
+
+In just a few words, what we're looking for here is ``unsigned promotion''.
+Right?  What happens when the arithmetic has a mixture of signed and
+unsigned values?  The signed value is interpreted as an unsigned value.
+The unsigned value from {\texttt{int b = -20}} is a very large
+unsigned integer.  So the answer is {\texttt{> 6}}.
+
+\end{enumerate}
+
+\section{Downhill now}
+
+At this point we are nearing the end of the test.  If the candidate
+is demoralized then that's a bad sign. They should have been able
+to whip through these questions so far without a sweat.
+
+But now we're going to get more elaborate in our questions and stray
+beyond the pure syntax and use of {\texttt{C}} in the embedded system
+scenario.
+
+\begin{enumerate}
+\item $\ddagger$ {\texttt{typedef}} is frequently used in C to declare a complex
+data structure.   It's also possible to use the pre-processor to do
+something similar.  For instance, consider the following code:
+
+\begin{lstlisting}
+#define dPS struct s *
+
+// vs.
+
+typedef struct s* tPS;
+\end{lstlisting}
+
+The intent in both cases is to define {\texttt{dPS}} and
+{\texttt{tPS}} to be pointers to a structure {\texttt{s}}.
+
+Which method is preferred and why?
+
+The answer is we prefer using {\texttt{typedef}}.  The compiler
+will help us track down mis-use of the data type.  It also
+allows us to define formal parameters to functions that
+accept or return values of that given type.  Although not always
+a motivation in embedded software, attempts to inject a bit more of 
+abstraction at least in terms of definitions and usages helps the
+reader understand what's being done in the code.  And further,
+an abundance of macros used to define complex types will be difficult
+to maintain for the next engineer on your project.  
+
+Humans can read the code and made the associations in their mind
+of what a syntax means.  A pre-processor definition to define a type
+doesn't read-off the code easily.  Frankly, it's archaic.
+
+A lot of the embedded software engineer candidates we come across
+did not start and work in embedded software their entire career.
+They had careers in other software (API-level) software that forced
+them to be very abstract and elaborative of their code.
+
+{\texttt{typedef}} is the right answer for all these reasons.
+
+\item Although it is not common in an embedded system, there are RTOS
+in the industry that do synthesize some dynamic memory allocation
+routines.  So, explain the the problem of using dynamic memory
+in an embedded software application.  Describe the issues. Start 
+with this simple question -- explain the difference between heap, 
+free-store, and the stack?
+
+A follow up question is:   Can you explain why I would want to avoid
+too many Tasks in an application that uses an RTOS?  How many is too many?
+What else should I be concerned about when I have a lot of tasks in an
+embedded software application?
+
+\par
+
+This is probably the most soft-ball question given and there aren't 
+stark answers.  It's going to be a discussion.   And through the discussion
+you (the interviewer) will pick up on things that they think and it will
+help shape your perception of what the candidate really knows about
+overall embedded software.
+
+Let's take the question apart and see what happens:
+
+\begin{itemize}
+\item RTOS.  Can you get them to talk about what RTOS they have used?
+The author likes to take a diversion here and level set what the 
+candidate thinks an {\textit{Operating System}} is?  Here's what
+should be in their answer:  An operating system provides capabilities to\ldots
+   \begin{enumerate}
+      \item Create and manage processes (Tasks, processes, etc\ldots)
+      \item Manage memory (including handling allocation of and protection of memory)
+      \item Handle I/O (otherwise known as device drivers to specific hardware)
+      \item Filesystem (aka, persistent storage)
+   \end{enumerate}
+That's what you'd get from the first chapter of Tennenbaum's
+{\underline{Operating Systems}} textbook.
+But about RTOS -- what do they use in the RTOS?  Where do they put the
+{\textsc{mutex}} and the {\textsc{semaphore}}?   
+\item Memory.  Where does the code go?  What is the method that they use to
+define where instructions and data are placed in the device?  (We're looking for 
+{\textit{link files}}, {\textit{scatter files}}, etc\ldots).  But what
+do those files do?  
+\item Heap, stack and free-store.   A thing is allocated depending on how it's
+instantiated.   Getting the candidate to talk about the difference and properties of
+the heap, stack and free-store is an interesting test.   First, the chances of 
+using any dynamic memory are suspect in an embedded system unless a type of RTOS
+is even used.   We may not ever use one.  It may be bare-metal C, period.  But
+if we are using an RTOS and we are dynamically allocating {\textit{anything}}
+this question is important.
+
+\begin{itemize}
+   \item Stack.   The stack is where automatic variables are stored.
+\begin{lstlisting}
+void foo()
+{
+   int bar_on_stack;
+   // etc...
+   do_something();
+   // etc...
+}
+\end{lstlisting} 
+Access is fast since  the access is just an offset from the frame pointer.  The
+space provided for the stack is transient and subject to the call to the function. The
+compiler injects the instructions which sets the stack and frame pointer as the function 
+call is made (those instructions to perform the linkage on entry and exit of the function).
+
+For example, MC68000 assembly uses this:
+
+\begin{lstlisting}
+SUBR	 MOVEM.L  DO-D2,-(A7)
+         ## code here
+         MOVEA.L  (A7)+, D0-D2
+\end{lstlisting}
+
+The stack itself, the location of {\texttt{A7}} for instance was assigned in the
+setup initialization (another tangent to take).
+
+The ARM processor will do this differently.  The author found this simple demonstration:
+
+\begin{lstlisting}
+; Prologue - setup
+mov     ip, sp                 ; get a copy of sp.
+stmdb   sp!, {fp, ip, lr, pc}  ; Save the frame on the stack. See Addendum
+sub     fp, ip, #4             ; Set the new frame pointer.
+    ...
+; Maybe other functions called here.
+; Older caller return lr stored in stack frame.
+bl      baz
+    ...
+; Epilogue - return
+ldm     sp, {fp, sp, lr}       ; restore stack, frame pointer and old link.
+    ...                        ; maybe more stuff here.
+bx      lr                     ; return.
+\end{lstlisting}
+
+To close off the topic of the Stack, just some more words that help describe the
+key features and how they impact development.  Much of this however is handled by
+the compiler.  But there are times we don't use the compiler to write a special part
+of the code.  Awareness of this is useful for other reasons -- like debugging
+stack-overflow, corruption, etc..
+
+Just to get the words, right, I'm taking this from a 
+textbook\footnote{{\underline{68000 Assembly Language Programming}}, by 
+Gerry Kane, Doug Hawkins, and Lance Leventhal, Osborne/McGraw-Hill, Berkeley CA, 1981, 
+page 10-4} the author knows
+well, this can apply to just about all fundamental conditioning of the Stack:
+
+\begin{quote}
+When passing parameters on the stack, the programmer must implement this
+approach as follows:
+\begin{enumerate}
+\item Decrement the system stack pointer to make room for parameters on the
+system stack, and store them using offsets from the stack pointer; or simply
+push the parameters on the stack.
+\item Access the parameters by means of offsets from the system stack pointer,
+remembering that JSR places the return address at the top of the stack.
+\item Store the results on the stack by means of offsets from the systems stack
+pointer.
+\item Clean up the stack before or after returning from the subroutine, so that the
+parameters are removed and the results are handled appropriately.
+\end{enumerate}
+\end{quote}
+
+
+\item Free-store and Heap.  Here's what Herb Sutter has written about it:
+
+\begin{quote}
+Free Store      The free store is one of the two dynamic memory
+                 areas, allocated/freed by new/delete.  Object
+                 lifetime can be less than the time the storage
+                 is allocated; that is, free store objects can
+                 have memory allocated without being immediately
+                 initialized, and can be destroyed without the
+                 memory being immediately deallocated.  During
+                 the period when the storage is allocated but
+                 outside the object's lifetime, the storage may
+                 be accessed and manipulated through a void* but
+                 none of the proto-object's nonstatic members or
+                 member functions may be accessed, have their
+                 addresses taken, or be otherwise manipulated.
+\end{quote}
+
+And he also wrote:
+
+\begin{quote}
+ Heap            The heap is the other dynamic memory area,
+                 allocated/freed by malloc/free and their
+                 variants.  Note that while the default global
+                 new and delete might be implemented in terms of
+                 malloc and free by a particular compiler, the
+                 heap is not the same as free store and memory
+                 allocated in one area cannot be safely
+                 deallocated in the other. Memory allocated from
+                 the heap can be used for objects of class type
+                 by placement-new construction and explicit
+                 destruction.  If so used, the notes about free
+                 store object lifetime apply similarly here.
+\end{quote}
+
+
+Now the careful reader of this document will have already objected that this is really
+related to C++ and not C!   True.  
+
+But in further research on the very accessible Wikipedia, this very much summarizes the 
+points to get across (with apologies for the cut/paste):
+
+\begin{itemize}
+\item The C programming language manages memory statically, automatically, or dynamically. 
+\item Static-duration variables are allocated in main memory, usually along with the executable code of the program, and persist for the lifetime of the program
+\item Automatic-duration variables are allocated on the stack and come and go as functions are called and return.
+\item For static-duration and automatic-duration variables, the size of the allocation must be compile-time constant (except for the case of variable-length automatic arrays).
+\item Dynamic memory allocation-- memory more explicitly (but more flexibly) managed, typically by allocating it from the free store (informally called the "heap"), an area of memory structured for this purpose.
+\end{itemize}
+\end{itemize}
+
+So this is where we are left.    In C and for the most part embedded software probably is
+developed in C, this point of the Stack, Heap (free-store) is worth discussing with the
+candidate and the more they talk about it, the more you will get a sense of their background
+facing challenges.
+
+\end{itemize}
+
+\item Comment on this code.  What does it do?  Why?
+
+\begin{lstlisting}
+char* ptr;
+if (( ptr = (char *) malloc (0)) == NULL )
+     puts ( " got a null pointer " );
+else
+     puts ( " got a valid pointer " );
+\end{lstlisting} 
+
+The answer is {\textbf{it depends}}.
+
+\begin{itemize}
+\item If the implementation returns \NULL, that's one answer.
+\item If the implementation returns a valid pointer, that's another answer.
+\end{itemize}
+
+It depends on the implementation of the {\texttt{malloc}} function.
+
+The {\texttt{C}} standard (C17 7.22.3/1)\par
+\begin{quote}
+If the size of the space requested is zero, the behavior is implementation defined: either a \NULL\ pointer is returned, or the behavior is as if the size were some nonzero value, except that the returned pointer shall not be used to access an object.
+\end{quote}
+
+It could return \NULL, or it can return a valid pointer that cannot be dereferenced (but can still be an argument to {\texttt{free}}).
+
+Already we're in a mess. So why do embedded software engineers rely on dynamic memory?  How do embedded software engineers create
+the dynamism of allocating resources?  
+
+The candidate should begin to wax poetically about pools and pre-defined buffers, and all sorts of RTOS whistles and bells that may be available,
+but then the candidate can also simply say they don't use dynamic memory allocation in real-time embedded software.  Both answers are acceptable,
+but we hope that we do hear the candidate talk about both sides of the issue.
+
+About that follow-up question: 
+\begin{quote}
+Can you explain why I would want to avoid
+too many Tasks in an application that uses an RTOS?  How many is too many?
+What else should I be concerned about when I have a lot of tasks in an
+embedded software application?
+\end{quote}
+
+We should look for these in the answer:
+\begin{itemize}
+\item Tasks that share resources need to be synchronized with an intermediate
+mechanisms -- mutex, semaphore, and derivative complex data structures like queues 
+or other sorts of ``inter task/process'' communication devices.   
+\item Add more tasks, add more code to differentiate between two or more threads of
+control vying for the access to a single resource.
+\item Add more tasks, add more requirements of each task with space for its
+own stack, which puts pressure on the design for a typical embedded software application
+that is limited in resources.
+\item Add more tasks, add more (a lot more) different ways for faults to occur and the
+work and effort to troubleshoot a multi-threaded application (already a challenge
+is compounded by more tasks).
+\item Fine tuning.  How much quanta given to each task, their priorities, and troubleshooting
+starvation of a task from the MCU.
+\end{itemize}
+
+The rabbit holes multiply.  The risks multiply and the amount of extra work to ``make
+an elegant solution with many threads of control'' devolves into a lot of code just to maintain
+the illusion of the elegance.
+
+There's a lot to be said for the single loop, monolithic approach.   Your mileage may vary.
+
+What does your candidate say.  Do the words they say indicate they've been through this
+decision process.  Do you want a candidate who hasn't?
+
+\end{enumerate}
+
+
+\section{Abstraction}
+
+In this section we're going to cover more abstract issues and concepts
+that can be asked during the interview for a potential embedded software
+engineer (or any software engineer for that matter).
+
+These questions are not specific to embedded software, but there is
+a common set of knowledge that software engineers should know before
+moving forward in the review process.
+
+I've put into the document a lot more discussion about the answers.
+Most of the discussion is my own interpretation of what the answers
+should be and also includes a very short primer-like explanation of
+why the answer is right.
+
+It is important to know that my answers are not the perfect answers.
+\par
+Others who have more fine tuned experience with OOP may beg to differ
+with the explanation and the answers.  I hope that is just in a few
+cases, but I admit that there may be some fundamental differences.
+\par
+If you feel it is important to correct those differences, let me know.
+Your suggestions would be welcome.
+\par
+
+Let's begin!
+
+\begin{enumerate}
+
+% top level question
+\item What makes a good API?
+\par
+API is the Application Programming Interface.  Right off the bat, let's
+get the terms normalized.  The Application in this case is the software
+that uses the API.   For example, the API defined by functions in
+{\texttt{stdio.h}} are used by software that expects to use the function
+{\texttt{printf}}.   The Interface is the function {\texttt{printf}}
+and the Application is some arbitrary code that uses the function.
+\par
+
+Another way to view API is how a class is designed.  A class has
+methods and data and the methods are what we routinely use to access the data
+stored by an instance of the class, or methods are routinely used to
+cause behavior implemented by the instance of the class (or by the class
+itself in the case of a static method).
+
+\par
+
+In either case, we're interested in the Interface through which actions
+and behaviors implemented by some underlying software are exercised.
+\par
+
+In light of that basis, the answer to the question ``What makes
+a good API?'', it follows that:
+
+\begin{enumerate}
+  \item The API should do one thing and do it well.   An example:  {\texttt{stdio.h}} for lack of a better definition is not the best place to define an API
+for creating threads, or creating network sockets, etc\...  The {\textit{do 
+one thing}} part is that {\texttt{stdio}} does one thing: provide capabilities
+for {\textbf{standard}} I/O functionality.   Threads and sockets are not
+standard I/O functionality.  They have standards and there are API for
+working with threads and sockets, but those functions do not belong in
+{\texttt{stdio.h}}.   The ``do it well'' clause means that whatever
+the capabilities are, the API provides an  Interface to well designed
+and implemented functions for I/O.  A good example is our friend
+{\texttt{printf}}.  That function has a lot of features, but few arguments.
+It wants a specification for the format of the output ( the first argument ),
+and then it wants a variable number of arguments to fit into the format.
+It's that simple.  But {\texttt{printf}} does this {\textit{extremely well}}.
+\par
+When designing an API, the goal should be that the capabilities in the
+API are each individually implemented to do their jobs with precision,
+and completeness, and as simply as possible.
+\item The API should be small as possible, but no smaller.  This goes
+to the point earlier about {\textit{do one thing}}.  If the API is kept
+focused (as small as possible), then it will naturally converge to
+a set of capabilities that are all very close in purpose ({\textit{ do
+one thing well}}).  However, the richness of the API should not be
+sacrificed for this goal.  Therefore, the clause {\textit{but no smaller}}
+means try to keep the API as feature rich as possible while still maintaining
+economy of purpose.  If the API is complemented by a function that seems
+ever apparently needed along with other functions in the API, then
+that function is a good candidate to add to the API.  If a function is
+seldom with the other functions in the API -- and moreover -- is likely
+to be useful without the API then this is a consideration that the
+other function may in fact belong to a different class of functions.
+It's up to the designer, but if the designer is sensitive to the
+risk of proliferation of functions in the API, these creeping features
+are avoided in the target API.
+\item Minimize accessibility of Everything.   Not every piece of
+data controlled by or used by a class with methods is necessarily
+useful to the Programmer.  A simple example is a {\texttt{Coordinate}}
+class.  A {\texttt{Coordinate}} might be a class that encapsulates
+the information to define a point in some space geometrically.  Each
+individual component of data which together defines a Coordinate
+may not be of use to a Programmer, but the abstract Coordinate is
+useful where the class ( or a peer class ) is capable of performing
+functions on Coordinates or functions with Coordinates.  Suppose
+the {\texttt{Coordinate}} class was for points in 3-dimensional space.
+We would expect each Coordinate to posses an {\texttt{x, y, z}}
+member data.  We would not expect the Programmer to want to either
+{\texttt{modify}} the individual constituent parts that define
+a Coordinate, nor would we even want to or expect the Programmer to
+be required to access the constituent parts that define a
+Coordinate.  Instead we would probably elect to design the class such
+that a given Coordinate is simply itself an argument and the class
+provides an API rich enough to make calculations with Coordinates.
+Example: Given two Coordinates, what is the Coordinate of the mid-point
+between them?  Or, what is the distance between two Coordinates?  Or
+given two Coordinates, what is the Coordinate of the destination if
+a straight line trajectory for some arbitrary scalar distance is made 
+through two Coordinates?  And so on.   All of these types of 
+functions of the Coordinate API belong to a Coordinate class probably.
+Does the API designer expect to provide access to the internal data
+that defines a Coordinate so that the Programmer must implement or
+apply yet another API to perform calculations?  Likely, not.  
+\item The names of things matter.   When we create the API we are choosing
+names for things.  We name functions. We name data held or controlled
+by the API too (sometimes).   The class name itself is something we
+choose to define.  All of these names are essentially arbitrary and
+the Programmer must be aware of them.  They are also names that affect
+ways of thinking -- how the functions are used -- when they are used.
+For example, consider an API that is responsible for handling special
+I/O with a device.  A routine in the API may be a function to indicate that
+an operation is completed.   Do we name this function {\texttt{done()}} ?
+We could, but what does it mean.  Does it mean that the instance
+of the class defining {\texttt{done()}} is no longer useful? Does it mean
+that some action (which action?) is completed?  Does it return
+truthfulness?   Is the response  to the {\texttt{done()}} function 
+true if the work tested by {\texttt{done()}} is completed.  We might
+choose names that are simple and abbreviated, but the compiler really
+doesn't care how abbreviated the names are, or how compact we try to
+fit a name.  What matters is what the Programmer is using -- and the names
+of things in the API do matter to the Programmer.   Here are some simple
+points to consider when naming things:
+   \begin{itemize}
+     \item Avoid acronyms.  {\texttt{BRIO}} -- They meant
+{\texttt{BlockingRead()}}.  Future users of the API won't know
+off hand what {\texttt{BR}} stands for.  Why create confusion? Just write
+it out.
+     \item For as complex as a function name is, the number of arguments
+tends to reduce and vice versa.  If the goal was to have a function for
+{\texttt{BlockingRead}} and {\texttt{NonBlockingRead}}, there is a chance
+that an argument was avoided -- the flag to indicate if the {\texttt{Read}}
+was blocking or not.  So, decide.  What makes more sense?  A tighter
+namespace {\texttt{Read()}} but more arguments (flag for blocking or not)?
+    \item  Documentation matters\ldots a lot.   It is almost a guarantee
+that the author of an API and the author of the implementation of the API
+will not be the user of the API.  People change jobs.  People get
+transferred. People get bored with whatever they did so they just leave
+the code and do something else.  What they leave behind is an API.  If the
+API has proper and good documentation, then the next person to pick up the API
+can have a very good basis to begin work.  They will understand
+what the API is, what the intent is, and they will have a useful basis
+to understand how it was supposed to work.  To be clear, in this context
+we are referring to the documentation {\textbf{of the API}} not necessarily
+the documentation {\textbf{within the implementation of the API}}.  The
+best example is already available.  The {\textit{manual page}}.  We use
+{\texttt{man}} to look up manual pages for all sorts of API in a system.
+Some systems have other file-format schemes for documenting their API.
+And still, some systems rely on the documentation to be part of the
+API itself -- in the source code headers that define the contour of the API.
+In all cases -- manual pages, external documentation like manual pages,
+and in-file header/source comments -- these all contribute to the requirement
+of describing {\textbf{what}} the API does {\textbf{how}} the API is used.
+\par
+Many packages exist for assisting with this goal of good API documentation.
+In-file markers (think: Doxygen), and other varieties of in-file markings
+help automate documentation generation.  Even without the generation
+of documentation from in-file markings, the comments in the code itself
+(or accompanying MarkDown, or manual pages) are essential for
+both the maintainers of the API and the Programmers using the API.
+\item Method (function) Design matters\ldots a lot.
+   When we look at the API, we find a set of functions that are exposed
+   by the API for the Programmer to use.  When those functions (methods)
+are designed, we want to maintain order and consistency.  For example
+suppose there were two functions in the API that handle processing
+data.  One function {\texttt{Result foo(Data d, Size size)}} accepts
+a parameter for some data and the size of the data. It returns a
+Result.  Another function {\texttt{void bar(Size size, 
+Data d, Result\& result)}}
+works with data also, it requires the data, the size of the data
+and it has an argument that is a reference to store the result. 
+\par
+The first function returns the Result.  The second function does not
+return the Result.  The caller of the first function could theoretically
+{\textit{ignore}} the result if there was one.  The second function
+demands that the caller provide a variable to store the result.  The
+result can still be ignored by the caller, but at least it has to 
+have awareness to provide a variable to store it. Further, the second
+function switches the order of Size and Data.  The first function, Data
+appeared before Size.  In the second function, Data appears after Size.
+\par
+Despite how pedantic this example is, it just shows something
+about design of the API.  Consistency throughout how data is passed into
+the functions of the API and consistency throughout how Results are
+gained by the caller of the functions of the API.
+\par 
+API's should be consistent.  If actions taken by the functions in the API
+are like-minded (see above), then there is ample reason to choose a set
+of Results in a single set so all of the functions in the API return
+a value that exists in the set of possible Results.   It doesn't matter
+if the nature of Result is a combination of bits that are set for multiple
+reasons, it doesn't matter if the Result is a simple native type like
+boolean, or some integer value.  At least there is consistency
+that any call to any function in the API yields a kind of result in
+the returned value.  Also, we look at the formal parameters of the API
+methods too.  Are the formal parameters in a consistent form.  For example
+Data before Size uniform in the API -- as well as  uniformally 
+compared to {\textbf{other API}} in the system.  Is your API an outlier
+in terms of names, argument order and return values?   A good API isn't
+an outlier in these terms.  A good API ``fits in'' with other API of
+the system.
+  \end{itemize}
+\end{enumerate}  %% What makes a good API question
+
+%% top level question
+\item What features in C++ make it object-oriented?
+
+There are several features of object-oriented programming that are
+readily available by the language.  Chief among them are
+\begin{itemize}
+   \item Encapsulation.
+   \item Inheritance
+   \item Polymorphism.
+\end{itemize}
+
+\begin{enumerate}
+   \item Encapsulation:   The hiding of data.  Protecting data.
+Data (as opposed to methods) that are either hidden away inside the
+instance of the class so they are still accessible by methods of the
+class, but not exposed outside of the class.  Protection is analogous
+to hiding data for a different reason -- two or more classes may
+be closely related, each has data, but besides themselves (those friendly
+classes), other classes have no rights to the data directly.  And
+like protection, the access to the data is metered out by how the
+class defines each member data element of the class (just as each
+member function is also likewise exposed by access constraints - 
+public, private and protected).
+  \item Inheritance:  The word speaks for itself.  We use the word
+to describe a relationship between two classes.  One class inherits
+from another.  What does it inherit?  It inherits two things:  Behavior
+and Data.  Specifically, it inherits capabilities (member functions)
+at the appropriate level of protection and it also inherits access to
+member data (at the appropriate level of protection) in the derived class.
+\par
+Better terminology is needed.  So for this case we're referring to
+the {\textit{base class}} and the {\textit{derived class}}.  In C++
+the language provides a way to declare a derived class inheriting from
+one or more classes.  We call this {\textit{Multiple Inheritance}}.  Some
+other OOP languages don't permit this multiple inheritance.  Those languages
+slice the differentiation by declaring a class can {\texttt{extend}} another
+class and the class can also {\texttt{implements}} other interfaces.
+\par The property of inheritance lets us describe a derived class with the
+phrase ``is-a'' relationship.   A {\texttt{Square}} class {\textit{is a}}
+{\texttt{Shape}} class.  All squares are shapes.  Not all shapes are 
+squares.  Using the phrase ``is-a'' is usually contrasted with another
+phrase ``has-a''. A class ``has-a'' member data.   A {\texttt{Shape}}
+class has an area.  A {\texttt{Coordinate}} class has a $x, y, z$ value
+for the position in 3-dimensional space.
+\par
+But, back to the point of Inheritance.  If the goal is simply that the
+derived class mimics exactly the same behavior of the base class(es). Then
+inheritance is not useful.  What is useful is to look at a class
+in terms of the API it provides when thinking about inheritance.  The 
+methods assigned to a base class form a basis of functional behavior.
+If the derived class inherits from the base class, the derived class is
+free to override those methods.  The derived class can provide different
+implementation to the methods that are inherited from the base class.
+For example, the base class {\texttt{Shape}} may have a method called
+{\texttt{float area()}}.  The intent is that this method will return
+the calculated area of the shape.   We have derived two classes from
+{\texttt{Shape}} -- {\texttt{Square}} and {\texttt{Circle}}.  If
+we wanted to compute the area of the square object or compute the area of
+the circle object, the algorithm is different.  For a square with side
+length $s$, the area is $s^2$.   A circle's area is $\pi r^2$ for circle
+radius $r$.  We know this, but the {\texttt{Shape}} base class does not
+and cannot know this.  Therefore we design the classes so that
+a {\texttt{Shape}} class has a method {\texttt{float area())}} but does
+not implement it (it cannot know how).  But any derived class of
+{\texttt{Shape}} must implement it.   So in some sense, the derived
+classes inherit the {\textit{interface}} declared in {\texttt{Shape}}.
+\item Polymorphism:  This is related to Inheritance. Without inheritance,
+polymorphism is really not possible.  The word means that the instance
+of an object takes on the role of a different class depending on which
+interface to the object is available.
+The definition from Bjarne Stroustrup is as follows:
+\begin{quote}
+polymorphism - providing a single interface to entities of different types. Virtual functions provide dynamic (run-time) polymorphism through an interface provided by a base class. Overloaded functions and templates provide static (compile-time) polymorphism. TC++PL 12.2.6, 13.6.1, D\&E 2.9.
+\end{quote}
+\par
+For example, back to our simple shapes scenario.   We might have
+declared that the {\texttt{Shape}} class is an abstract class. This means
+that at least one of the methods in the class is declared purely virtual.
+Abstract classes are by their definition meant to be a base class.
+Our method {\texttt{float area()}} in {\texttt{Shape}} is specified
+so that any derived class provides the method to compute the area of the
+derived class.   The method is declared purely virtual:
+
+\begin{lstlisting}
+class Shape
+{
+   public:
+      virtual float area() const = 0;
+
+   // ...
+};
+\end{lstlisting}
+
+A class derived from {\texttt{Shape}} looks like this:
+
+
+% Listing of the Shape class
+\begin{lstlisting}
+\end{lstlisting}
+
+And finally, a simple square class:
+
+% Listing of the Square class
+\begin{lstlisting}
+\end{lstlisting}
+
+How polymorphism can be used.
+
+Suppose we make some objects:
+
+\begin{lstlisting}
+Ellipse* pEllipse = new Ellipse(1.0f, 1.5f);
+\end{lstlisting}
+
+This is a pointer to a new object of type {\texttt{Ellipse}}. We
+constructed it so that the minor and major axis lengths are
+$1.0, 1.5$ respectfully.
+
+Another class might accept inputs of various shapes.  This function is
+not aware of all the kinds of shapes that exist. But, it only has to 
+verify that the area of the shape passed to the function is within a certain
+limit:
+
+\begin{lstlisting}
+class ShapeTester
+{
+    public:
+       ShapeTester(float space)
+       {
+            maxSpace = space
+       }
+
+       // If the shape fits the allowed space
+       //  return true
+       // Otherwise return false;
+   
+       bool shapeFits(Shape* pShape)
+       {
+            float area = pShape->area();
+            bool fits = (area <= maxSpace);
+            return fits;
+       }
+
+    private:
+       float maxSpace;
+};
+\end{lstlisting}
+
+Right away, we see in the API of the {\texttt{ShapeTester}} that
+it wants a pointer to a {\texttt{Shape}}, not a pointer to
+some arbitrary shape like {\texttt{Square}}, {\texttt{Circle}},
+or {\texttt{Ellipse}}.
+
+In other words -- the tester is ambivalent about the shape. All it
+wants is the Interface to an object to get the area of the shape.
+
+We made all of our shape classes inherit {\texttt{Shape}} so
+no matter which derived class we made from {\texttt{Shape}} we are
+sure that the tester will be able to get the area of the shape.
+
+Back to our example code:
+
+\begin{lstlisting}
+   ShapeTester* pShapeTester = new ShapeTester(10.0f);
+   // ...
+
+   Ellipse* pEllipse = new Ellipse(1.0f, 1.5f);
+   // ...
+
+   bool fits = pShapeTester->shape_fits(pEllipse);
+
+   if (fits) {
+        std::cout << "Shape fits" << std::endl;
+   }
+   else {
+        std::cout << "Shape does not fit" << std::endl;
+   }
+\end{lstlisting}
+
+
+What happens here? Polymorphism.  The class {\texttt{Ellipse}} can be
+viewed as an object of type {\texttt{Shape}} and it can be viewed
+as an object of type {\texttt{Ellipse}}.   One instance of 
+{\texttt{Ellipse}} exists, but there are two interfaces to the object:
+The {\texttt{Shape}} interface and the {\texttt{Ellipse}} interface.
+
+\par
+The {\texttt{Shape}} interface provides access to all of the methods
+and data accessible that are in the base class {\texttt{Shape}}.
+The {\texttt{Ellipse}} interface provides access to all of the
+methods and data accessible that are in the derived class {\texttt{Ellipse}}.
+\par 
+What happens is equivalent as if the code was this:
+
+\begin{lstlisting}
+   // ...
+
+   Shape* pShapeInterface = (Shape*) pEllipse;
+
+   bool fits = pShapeTester->shape_fits(pShapeInterface);
+   // ...
+\end{lstlisting}
+
+The point is that the object {\texttt{pEllipse}} two interfaces.
+One of the interfaces is of type {\texttt{Shape}} and the other interface
+is of type {\texttt{Ellipse}}.  It's actually a pointer {\textbf{to}}
+a {\texttt{Shape}}, hence {\texttt{Shape*}}.
+\par
+It would be complicated and overly rigid if the {\texttt{ShapeTester}}
+had to be written with overloaded functions, one per shape.  In line
+with what Stroustrup wrote, the single method in the {\texttt{ShapeTester}}
+will work with {\textbf{any}} derived class from {\texttt{Shape}}.
+\par
+
+This whole example is a very simple way of looking at Polymorphism.
+It relies on the ``is-a'' property of a class hierarchy.  It relies on
+the {\texttt{Ellipse}} class is derived {\textbf{from}} a {\texttt{Shape}}.
+\par
+But, there are far more elaborate ways to use the concept of Polymorphism.
+
+Here's a short list:
+
+\begin{itemize}
+\item Operator overloading.  Suppose a set of classes represents numerical
+quantities, but the default operators provided aren't aware of how to
+perform calculations on these new classes.   Adding a numerical quantity of
+type {\texttt{Foo}} to another numerical quantity of type {\texttt{Bar}}.
+(assuming that {\texttt{Foo}}, and {\texttt{Bar}} are just classes
+with backing data that is numerical) would be difficult unless we can
+overload the basic operators $+, -, *, /$, etc\ldots.
+\item A more specific Polymorphism example has to do with abstractions
+and patterns like {\textbf{class factories}}, or even {\textbf{COM}}
+models.  This is where the idea that a derived class ``is-a'' becomes
+more subtle.
+
+In the case of an Abstract Class Factory, we choose to design a class
+capable of returning an instance (an object) that is a certain class
+based solely on some argument applied to the Factory.    It's analogous
+to asking for a burger, or asking for fries, or a milkshake -- either one
+but asking the same person for it.  The person is the Class Factory,
+and the item requested is the instance of something class {\texttt{Burger}},
+{\texttt{Fries}}, or {\texttt{MilkShake}}.  The Factory has to
+have prior knowledge of the classes it is capable of creating object
+instances.
+\par
+The difference between this and COM (among many) is that the derived
+classes using COM are written to define at compile-time the hierarchical
+dependencies of a derived class.  But {\textit{accessing the interface}}
+to a specific base class of a derived class depends on the request knowing
+some information (using a UUID) which provides the {\texttt{IUnknown}}
+interface method {\texttt{QueryInterface}} information to cast
+a result parameter based on the UUID.
+\end{itemize}
+
+In other words, the coupling of a derived class to its base class can
+be very tight (inheritance based alone).  Or, it can be loosely
+coupled like COM or other mechanisms where the requester merely just
+asks for an interface and the grantor creates a pointer to an interface
+of some other class.
+
+  \end{enumerate}
+
+
+\item How is data hidden from other classes in C++ ?
+
+Patterns: Passkey, PIMPL\\
+Language: {\texttt{private, protected, public}} \\
+\par
+
+
+As far as I'm aware there are language features and software features
+to do this.
+
+In the language, within a class defined in the language, members can be
+restricted or unrestricted from other classes by assigning
+ {\texttt{private, protected, public}} to that member.
+
+A class can access all of its members.  And:
+
+\begin{itemize}
+\item {\texttt{public}} - Any other class can access the public member.
+\item {\texttt{protected}} - Only derived classes can access the protected member. Or classes that are {\texttt{friend}} to the class.
+\item {\texttt{private}} - No other class can access the private member,
+except those classes that are a {\texttt{friend}} to the class.
+\end{itemize}
+
+
+Example:
+\begin{lstlisting}
+class Alpha
+{
+     public:
+          int x;
+          void func();
+}
+
+// ...
+
+Alpha a;
+
+\end{lstlisting}
+
+Any other class may access {\texttt{a.x}}.  Any other class
+may call the function {\texttt{a.func()}}.  
+
+
+
+
+%% Section
+\end{enumerate} 
+
+
+Other quotes to  use:
+
+Note: Old line C programmers sometimes don't like references since they provide reference semantics that isn't explicit in the caller's code. After some C++ experience, however, one quickly realizes this is a form of information hiding, which is an asset rather than a liability. E.g., programmers should write code in the language of the problem rather than the language of the machine.
+
+
+John Carmack:
+
+NULL pointers are the biggest problem in C/C++, at least in our code. The dual use of a single value as both a flag and an address causes an incredible number of fatal issues. C++ references should be favored over pointers whenever possible; while a reference is “really” just a pointer, it has the implicit contract of being not-NULL. Perform NULL checks when pointers are turned into references, then you can ignore the issue thereafter.
+
+
+
+\end{document}
+
